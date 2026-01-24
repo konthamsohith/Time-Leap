@@ -1,0 +1,83 @@
+/* TimeLeap Custom Animations */
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotateY(12deg);
+    }
+    50% {
+        transform: translateY(-20px) rotateY(12deg);
+    }
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-scroll {
+    animation: scroll 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 1s ease-out forwards;
+}
+
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.rotate-y-12 {
+    transform: rotateY(12deg);
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+    transition-property: color, background-color, border-color, transform, opacity, box-shadow;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Selection styling */
+::selection {
+    background-color: #D4AF37;
+    color: #1C1C1E;
+}
+
+::-moz-selection {
+    background-color: #D4AF37;
+    color: #1C1C1E;
+}
