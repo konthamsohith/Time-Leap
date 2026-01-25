@@ -1,10 +1,58 @@
+// --- CHANGE 1: Add these imports for 3D functionality ---
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useGLTF, OrbitControls, Html, useProgress } from '@react-three/drei';
+// --------------------------------------------------------
+
+
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Sparkles, Globe, Clock3, Layers, MapPin, Calendar } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { historicalSites, testimonials } from '../mock';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
+
+
+
+function Model({ scrollProgress = 0 }) {
+  const group = useRef();
+  const { scene } = useGLTF('/models3d/hampi_test.glb');
+
+  useEffect(() => {
+
+    scene.position.set(0, 0, 0);
+
+
+    scene.scale.set(4, 4, 4);  //3d model size setting
+  }, [scene]);
+
+  return (
+        <group
+      rotation={[
+        scrollProgress * 0.1,
+        scrollProgress * 0.1,
+        0
+      ]}
+    >
+      <primitive object={scene} />
+    </group>
+  );
+}
+
+
+function Loader() {
+  const { progress } = useProgress();
+  return (
+    <Html center>
+      <div className="text-white text-sm font-bold bg-black/50 px-2 py-1 rounded">
+        {progress.toFixed(0)}%
+      </div>
+    </Html>
+  );
+}
+
+useGLTF.preload('/models3d/hampi_test.glb');
+
 
 
 
@@ -156,75 +204,77 @@ const Home = () => {
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* 3D Model Container */}
-            <div className="relative flex items-center justify-center">
-              <div 
-                className="relative transition-all duration-700 ease-out"
-                style={{
-                  transform: `scale(${0.6 + scrollProgress * 0.4}) rotateY(${-30 + scrollProgress * 30}deg) rotateX(${10 - scrollProgress * 10}deg)`,
-                  opacity: 0.3 + scrollProgress * 0.7
-                }}
-                
-              >
+            <div className="relative flex items-center justify-center w-full">
+              <div className="relative w-[520px] h-[520px] transition-all duration-700 ease-out">
 
-                {/* Monument Image with 3D effect */}
-                <div className="relative w-full max-w-lg aspect-square perspective-1000">
-                  <div className="relative w-full h-full">
-                   
-                   
-                    <img
-                      src={monumentSite.thumbnail}
-                      alt={monumentSite.name}
-                      className="w-full h-full object-cover rounded-2xl shadow-2xl"
+
+                  {/* Canvas Wrapper */}
+                  <div className="relative w-full max-w-lg aspect-square perspective-1000">
+                    <div className="relative w-full max-w-3xl aspect-square">
+
+                    <Canvas className = "w-full h-full"
+                    camera={{ position: [0, 0, 5], fov: 50 }} dpr={[1, 2]}>
+                      
+                        <ambientLight intensity={1.2} />
+                        <directionalLight position={[5, 5, 5]} intensity={2} />
+
+                        <Suspense fallback={<Loader />}>
+                          <Model scrollProgress={scrollProgress} />
+                        </Suspense>
+
+                        <OrbitControls
+                          enableZoom
+                          enablePan={false}
+                          autoRotate
+                          autoRotateSpeed={1.5}
+                        />
+                      </Canvas>
+
+                    </div>
+                  </div>
+
+                {/* Glowing rings */}
+                <div
+                  className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-700"
+                  style={{
+                    boxShadow: `0 0 ${40 + scrollProgress * 80}px ${10 + scrollProgress * 30}px rgba(212, 175, 55, ${0.2 + scrollProgress * 0.3})`
+                  }}
+                />
+
+                {/* Rotating border */}
+                <div
+                  className="absolute -inset-4 rounded-3xl pointer-events-none transition-all duration-1000"
+                  style={{
+                    background: `conic-gradient(from ${scrollProgress * 360}deg, transparent, #D4AF37, transparent)`,
+                    opacity: scrollProgress * 0.6,
+                    padding: '2px',
+                    WebkitMask:
+                      'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude'
+                  }}
+                />
+
+                {/* Floating particles */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-2 h-2 bg-[#D4AF37] rounded-full blur-sm"
+                      style={{
+                        top: `${20 + i * 15}%`,
+                        left: `${10 + (i % 2) * 80}%`,
+                        opacity: scrollProgress * 0.6,
+                        animation: `float ${3 + i * 0.5}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.2}s`
+                      }}
                     />
-                    
-
-
-
-                    {/* Overlay layers for depth */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/40 via-transparent to-transparent rounded-2xl"></div>
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent rounded-2xl"></div>
-                  </div>
-                  
-                  {/* Glowing rings for 3D effect */}
-                  <div 
-                    className="absolute inset-0 rounded-2xl transition-all duration-700"
-                    style={{
-                      boxShadow: `0 0 ${40 + scrollProgress * 80}px ${10 + scrollProgress * 30}px rgba(212, 175, 55, ${0.2 + scrollProgress * 0.3})`
-                    }}
-                  ></div>
-                  
-                  {/* Rotating border */}
-                  <div 
-                    className="absolute -inset-4 rounded-3xl transition-all duration-1000"
-                    style={{
-                      background: `conic-gradient(from ${scrollProgress * 360}deg, transparent, #D4AF37, transparent)`,
-                      opacity: scrollProgress * 0.6,
-                      padding: '2px',
-                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                      WebkitMaskComposite: 'xor',
-                      maskComposite: 'exclude'
-                    }}
-                  ></div>
-                  
-                  {/* Floating particles */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    {[...Array(6)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-2 h-2 bg-[#D4AF37] rounded-full blur-sm"
-                        style={{
-                          top: `${20 + i * 15}%`,
-                          left: `${10 + (i % 2) * 80}%`,
-                          opacity: scrollProgress * 0.6,
-                          animation: `float ${3 + i * 0.5}s ease-in-out infinite`,
-                          animationDelay: `${i * 0.2}s`
-                        }}
-                      ></div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              </div>
-            </div>
+
+  </div>
+</div>
+
 
             {/* Content */}
             <div 
@@ -310,15 +360,16 @@ const Home = () => {
           <Card className="relative overflow-hidden rounded-2xl shadow-2xl border-2 border-[#D4AF37]/20 bg-card/50 backdrop-blur-sm">
             <div
               ref={sliderRef}
-              className="relative h-[500px] cursor-ew-resize select-none"
+              className="relative h-[650px] cursor-ew-resize select-none"
               onMouseDown={handleMouseDown}
             >
               {/* After Image */}
               <img
-                src="/images/after.png"
-                alt="After reconstruction"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              src="/images/after.png"
+              alt="After reconstruction"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+
 
               {/* Before Image with clip */}
               <div

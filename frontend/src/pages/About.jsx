@@ -163,10 +163,10 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { number: "500+", label: "Sites Reconstructed" },
-              { number: "50K+", label: "Active Users" },
+              { number: "20+", label: "Sites Reconstructed" },
+              { number: "10K+", label: "Active Users" },
               { number: "25+", label: "Countries" },
-              { number: "95%", label: "Accuracy Rate" }
+              { number: "90%", label: "Accuracy Rate" }
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] bg-clip-text text-transparent mb-2">
