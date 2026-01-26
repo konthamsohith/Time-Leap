@@ -6,14 +6,15 @@ import { Card } from '../components/ui/card';
 import { Slider } from '../components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { historicalSites } from '../mock';
-
-
+import MonumentModel from '../components/MonumentModel';
 
 
 const ProjectDetail = () => {
   const { id } = useParams();
   const site = historicalSites.find(s => s.id === parseInt(id));
   const [timelineProgress, setTimelineProgress] = useState(100);
+  const [viewMode, setViewMode] = useState('before');
+
 
   if (!site) {
     return (
@@ -88,23 +89,49 @@ const ProjectDetail = () => {
                 {/* Mock 3D Viewer */}
                 <div className="relative w-full h-full">
                   
-                  <img
-                    src={site.thumbnail}
-                    alt={site.name}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-full h-full flex items-center justify-center">
+                <MonumentModel
+                  modelPath={
+                    viewMode === 'before' ? site.models.before : site.models.after
+                  }
+                  scale={
+                    site.models.scales
+                      ? site.models.scales[viewMode]
+                      : site.models.scale || 1
+                  }
+                  scrollProgress={timelineProgress / 100}
+                />
+
+
+                </div>
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                  
-                  {/* 3D Controls Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full border-2 border-white/30 mb-4 hover:bg-white/20 transition-all cursor-pointer group">
-                        <Play className="h-10 w-10 text-white group-hover:scale-110 transition-transform" />
-                      </div>
-                      <p className="text-white font-semibold">Interactive 3D View</p>
-                      <p className="text-white/70 text-sm">Click to explore</p>
+                 
+
+                  {/* Before / After Toggle */}
+                    <div className="absolute top-4 left-4 flex bg-black/40 backdrop-blur-md rounded-lg overflow-hidden border border-white/20">
+                      <button
+                        onClick={() => setViewMode('before')}
+                        className={`px-4 py-2 text-sm font-semibold transition ${
+                          viewMode === 'before'
+                            ? 'bg-[#D4AF37] text-black'
+                            : 'text-white hover:bg-white/10'
+                        }`}
+                      >
+                        Before
+                      </button>
+                      <button
+                        onClick={() => setViewMode('after')}
+                        className={`px-4 py-2 text-sm font-semibold transition ${
+                          viewMode === 'after'
+                            ? 'bg-[#00BFA6] text-black'
+                            : 'text-white hover:bg-white/10'
+                        }`}
+                      >
+                        After
+                      </button>
                     </div>
-                  </div>
+
 
                   {/* Mock 3D Controls */}
                   <div className="absolute bottom-4 right-4 flex gap-2">

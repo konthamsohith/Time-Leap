@@ -20,7 +20,14 @@ export const historicalSites = [
       { year: 1565, status: "Destruction after Battle of Talikota", progress: 40 },
       { year: 2024, status: "Archaeological Preservation and Digital Documentation", progress: 85 }
     ],
-    model: "/models/model_after_hampi.glb"
+    models: {
+      before: "/models3d/model_before_hampi.glb",
+      after: "/models3d/model_after_hampi.glb",
+      scales: {
+        before: 2.5,
+        after: 2.5
+      }
+    }
   }
   ,
   {
@@ -41,7 +48,15 @@ export const historicalSites = [
       { year: 1066, status: "Original Construction", progress: 100 },
       { year: 1646, status: "Partial Demolition", progress: 40 },
       { year: 2024, status: "Digital Reconstruction", progress: 95 }
-    ]
+    ],
+    models: {
+      before: "/models3d/model_before_corfe.glb",
+      after: "/models3d/model_before_corfe.glb",
+      scales: {
+        before: 3.5,
+        after: 3.5
+      }
+    }
   },
   {
     id: 3,
