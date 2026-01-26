@@ -160,7 +160,7 @@ const Upload: React.FC = () => {
               {files.map((fileObj) => (
                 <div
                   key={fileObj.id}
-                  className="flex items-center space-x-4 p-3 rounded-lg bg-background/50 border border-border"
+                  className="flex items-center space-x-4 p-3 rounded-lg bg-muted/10 border border-border"
                 >
                   {fileObj.preview ? (
                     <img

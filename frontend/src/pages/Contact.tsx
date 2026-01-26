@@ -69,65 +69,65 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4">
+    <div className="min-h-screen bg-[#111111] pt-32 pb-16 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-            <span className="bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] bg-clip-text text-transparent">
-              Get In Touch
-            </span>
+        <div className="flex flex-col items-center text-center mb-20">
+          <div className="inline-flex items-center bg-[#222222] border border-white/10 rounded-full px-4 py-2 mb-6">
+            <span className="text-sm font-medium text-[#BBBBBB]">Contact us</span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            Get in touch
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Have questions about TimeLeap? We'd love to hear from you.
+          <p className="text-[#888888] text-lg max-w-2xl" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            Have questions about a historical site or interested in a heritage partnership? We'd love to hear from you.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact Info */}
           <div className="lg:col-span-1 space-y-6">
             {contactInfo.map((info, index) => (
-              <Card
+              <div
                 key={index}
-                className="p-6 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-[#D4AF37]/50 transition-all"
+                className="p-8 bg-[#1A1A1A] rounded-[2.5rem] border border-white/5 hover:border-white/10 transition-all flex flex-col items-start gap-6"
               >
-                <div className="flex items-start space-x-4">
-                  <div className="inline-flex p-3 bg-gradient-to-br from-[#D4AF37]/20 to-[#00BFA6]/20 rounded-lg">
-                    <info.icon className="h-6 w-6 text-[#D4AF37]" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">{info.title}</h3>
-                    {info.link ? (
-                      <a
-                        href={info.link}
-                        className="text-sm text-muted-foreground hover:text-[#D4AF37] transition-colors"
-                      >
-                        {info.content}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">{info.content}</p>
-                    )}
-                  </div>
+                <div className="inline-flex p-4 bg-[#222222] border border-white/10 rounded-2xl">
+                  <info.icon className="h-6 w-6 text-[#D4AF37]" />
                 </div>
-              </Card>
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-widest text-xs" style={{ fontFamily: "'Manrope', sans-serif" }}>{info.title}</h3>
+                  {info.link ? (
+                    <a
+                      href={info.link}
+                      className="text-[#888888] hover:text-white transition-colors text-lg"
+                      style={{ fontFamily: "'Manrope', sans-serif" }}
+                    >
+                      {info.content}
+                    </a>
+                  ) : (
+                    <p className="text-[#888888] text-lg" style={{ fontFamily: "'Manrope', sans-serif" }}>{info.content}</p>
+                  )}
+                </div>
+              </div>
             ))}
 
-            <Card className="p-6 bg-gradient-to-br from-[#D4AF37]/10 to-[#00BFA6]/10 border-2 border-[#D4AF37]/30">
-              <h3 className="font-bold mb-2">Office Hours</h3>
-              <p className="text-sm text-muted-foreground mb-1">Monday - Friday</p>
-              <p className="text-sm font-semibold text-[#D4AF37]">9:00 AM - 6:00 PM EST</p>
-            </Card>
+            <div className="p-8 bg-gradient-to-br from-[#1A1A1A] to-[#222222] rounded-[2.5rem] border border-[#D4AF37]/20">
+              <h3 className="text-white font-bold mb-4 uppercase tracking-widest text-xs">Collaboration Hours</h3>
+              <p className="text-[#888888] mb-1 text-sm">Monday - Friday</p>
+              <p className="text-xl font-bold text-white">9:00 AM - 6:00 PM EST</p>
+            </div>
           </div>
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="p-8 bg-card/50 backdrop-blur-sm border-2 border-border">
-              <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+            <div className="p-12 bg-[#1A1A1A] rounded-[3.5rem] border border-white/5 shadow-2xl">
+              <h2 className="text-3xl font-medium text-white mb-8" style={{ fontFamily: "'Manrope', sans-serif" }}>Send us a Message</h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name *</Label>
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label htmlFor="name" className="text-[#BBBBBB] font-bold uppercase tracking-widest text-xs ml-4">Name *</Label>
                     <Input
                       id="name"
                       name="name"
@@ -135,12 +135,12 @@ const Contact: React.FC = () => {
                       onChange={handleChange}
                       required
                       placeholder="Your name"
-                      className="bg-background/50 border-border focus:border-[#D4AF37] focus:ring-[#D4AF37]/20"
+                      className="bg-[#111111] border-white/10 text-white rounded-full py-6 px-6 focus:border-[#D4AF37] focus:ring-0 transition-all"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="email" className="text-[#BBBBBB] font-bold uppercase tracking-widest text-xs ml-4">Email *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -149,26 +149,26 @@ const Contact: React.FC = () => {
                       onChange={handleChange}
                       required
                       placeholder="your@email.com"
-                      className="bg-background/50 border-border focus:border-[#D4AF37] focus:ring-[#D4AF37]/20"
+                      className="bg-[#111111] border-white/10 text-white rounded-full py-6 px-6 focus:border-[#D4AF37] focus:ring-0 transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="subject" className="text-[#BBBBBB] font-bold uppercase tracking-widest text-xs ml-4">Subject *</Label>
                   <Input
                     id="subject"
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    placeholder="What's this about?"
-                    className="bg-background/50 border-border focus:border-[#D4AF37] focus:ring-[#D4AF37]/20"
+                    placeholder="Historical inquiry, technical support, etc."
+                    className="bg-[#111111] border-white/10 text-white rounded-full py-6 px-6 focus:border-[#D4AF37] focus:ring-0 transition-all"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="message" className="text-[#BBBBBB] font-bold uppercase tracking-widest text-xs ml-4">Message *</Label>
                   <Textarea
                     id="message"
                     name="message"
@@ -176,32 +176,35 @@ const Contact: React.FC = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    placeholder="Tell us more..."
-                    className="bg-background/50 border-border focus:border-[#D4AF37] focus:ring-[#D4AF37]/20 resize-none"
+                    placeholder="How can we help you explore history?"
+                    className="bg-[#111111] border-white/10 text-white rounded-[2rem] p-6 focus:border-[#D4AF37] focus:ring-0 transition-all resize-none"
                   />
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] hover:from-[#E5C04A] hover:to-[#00D4C0] text-[#1C1C1E] font-semibold py-6"
+                  className="w-full bg-white text-black hover:bg-white/90 rounded-full py-8 text-lg font-bold shadow-xl transition-all transform hover:-translate-y-1"
                 >
                   Send Message
-                  <Send className="ml-2 h-5 w-5" />
+                  <Send className="ml-3 h-5 w-5" />
                 </Button>
               </form>
-            </Card>
+            </div>
           </div>
         </div>
 
         {/* Map Placeholder */}
-        <Card className="mt-12 h-96 overflow-hidden border-2 border-border">
-          <div className="w-full h-full bg-gradient-to-br from-[#1C1C1E] to-[#2A2A2E] flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-16 w-16 text-[#D4AF37] mx-auto mb-4" />
-              <p className="text-muted-foreground">Interactive Map Coming Soon</p>
+        <div className="mt-16 h-96 rounded-[3.5rem] overflow-hidden border border-white/5 relative bg-[#1A1A1A] group">
+          <div className="absolute inset-0 bg-[#111111] flex items-center justify-center">
+            <div className="text-center group-hover:scale-105 transition-transform duration-700">
+              <div className="w-20 h-20 bg-[#222222] border border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin className="h-8 w-8 text-[#D4AF37]" />
+              </div>
+              <p className="text-[#888888] font-medium tracking-widest uppercase text-xs">Global Heritage Office</p>
+              <h3 className="text-2xl font-medium text-white mt-2">Interactive Map Coming Soon</h3>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

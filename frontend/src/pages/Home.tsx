@@ -1,6 +1,6 @@
 // --- CHANGE 1: Add these imports for 3D functionality ---
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Html, useProgress } from '@react-three/drei';
 // --------------------------------------------------------
 
@@ -26,14 +26,16 @@ function Model({ scrollProgress = 0 }: { scrollProgress: number }) {
     scene.scale.set(4, 4, 4);  //3d model size setting
   }, [scene]);
 
+  useFrame((state: any) => {
+    if (group.current) {
+      // Continuous rotation + scroll influence
+      group.current.rotation.y = state.clock.getElapsedTime() * 0.5 + scrollProgress * 2;
+      group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1 + scrollProgress * 0.5;
+    }
+  });
+
   return (
-    <group
-      rotation={[
-        scrollProgress * 0.1,
-        scrollProgress * 0.1,
-        0
-      ]}
-    >
+    <group ref={group}>
       <primitive object={scene} />
     </group>
   );
@@ -122,193 +124,428 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1C1C1E] via-[#2A2A2E] to-[#1C1C1E]">
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute top-20 left-20 w-72 h-72 bg-[#D4AF37] rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#00BFA6] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#111111] text-white overflow-hidden selection:bg-white selection:text-black">
+      {/* --- HERO SECTION --- (TimeLeap Context) */}
+      <section className="relative min-h-[95vh] flex flex-col justify-center px-6 pt-32 pb-16">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="space-y-10 animate-fade-in-up">
+              <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2">
+                <span className="text-sm font-medium text-[#BBBBBB]">#1 in Digital Heritage Visualization</span>
+              </div>
 
-        {/* 3D Mock Viewer */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <div className="relative w-96 h-96 perspective-1000">
-            <div className="absolute inset-0 transform rotate-y-12 animate-float">
-              <img
-                src="https://plus.unsplash.com/premium_photo-1697729681522-c4e33d91b40a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="3D model"
-                className="w-full h-full object-cover rounded-lg shadow-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/30 to-transparent rounded-lg"></div>
+              <h1
+                className="font-medium tracking-tight text-white"
+                style={{
+                  fontFamily: "'Manrope', sans-serif",
+                  fontSize: '68px',
+                  lineHeight: '82px',
+                  fontWeight: 500
+                }}
+              >
+                Seeing History <br />
+                Through Time
+              </h1>
+
+              <p
+                className="max-w-lg font-normal"
+                style={{
+                  fontFamily: "'Manrope', sans-serif",
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '20px',
+                  lineHeight: '32px',
+                  fontWeight: 400
+                }}
+              >
+                Visualize how historical places have changed over time. Explore interactive 3D reconstructions and experience the past.
+              </p>
+
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link to="/explore">
+                  <Button
+                    className="bg-white text-black hover:bg-[#EEEEEE] px-10 py-7 rounded-full transition-transform hover:scale-105"
+                    style={{
+                      fontFamily: "'Manrope', sans-serif",
+                      fontSize: '17px',
+                      lineHeight: '26px',
+                      fontWeight: 500
+                    }}
+                  >
+                    Start Exploring
+                  </Button>
+                </Link>
+                <Link to="/upload">
+                  <Button
+                    variant="outline"
+                    className="bg-[#222222] border-[#333333] text-white hover:bg-[#333333] px-10 py-7 rounded-full transition-transform hover:scale-105"
+                    style={{
+                      fontFamily: "'Manrope', sans-serif",
+                      fontSize: '17px',
+                      lineHeight: '26px',
+                      fontWeight: 500
+                    }}
+                  >
+                    Upload Image
+                  </Button>
+                </Link>
+              </div>
+
             </div>
-          </div>
-        </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-          <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full px-6 py-2 mb-8 animate-fade-in">
-            <Sparkles className="h-4 w-4 text-[#D4AF37]" />
-            <span className="text-sm text-[#E0E0E0]">Powered by Advanced 3D Technology</span>
-          </div>
+            {/* Right Visual (Arched Image & Badges) */}
+            <div className="relative animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <div className="relative aspect-[4/5] w-full max-w-2xl mx-auto rounded-t-full overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+                <img
+                  src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1200&auto=format&fit=crop"
+                  alt="Hampi Ruins"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+              </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 animate-fade-in-up" style={{ fontFamily: "'Playfair Display', serif" }}>
-            <span className="bg-gradient-to-r from-[#D4AF37] via-[#E0E0E0] to-[#00BFA6] bg-clip-text text-transparent">
-              Travel Through Time
-            </span>
-          </h1>
+              {/* Floating Status Badges */}
+              <div className="absolute top-20 right-0 translate-x-12 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-[#D4AF37]"></div>
+                <span className="text-sm font-medium text-white/90">3D Exploration</span>
+              </div>
 
-          <p className="text-xl md:text-2xl text-[#E0E0E0]/80 mb-12 max-w-3xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Rebuild History Digitally
-          </p>
+              <div className="absolute top-1/2 -right-16 translate-y-8 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-[#00BFA6]"></div>
+                <span className="text-sm font-medium text-white/90">Past vs Present</span>
+              </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <Button
-              size="lg"
-              className="group relative overflow-hidden bg-gradient-to-r from-[#D4AF37] to-[#B8941F] hover:from-[#E5C04A] hover:to-[#D4AF37] text-[#1C1C1E] font-semibold px-8 py-6 text-lg rounded-xl shadow-2xl"
-            >
-              <span className="relative z-10 flex items-center">
-                Reconstruct Now
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
-            </Button>
+              <div className="absolute bottom-32 -left-16 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-white/40"></div>
+                <span className="text-sm font-medium text-white/90">Historical Accuracy</span>
+              </div>
 
-            <Button
-              size="lg"
-              variant="outline"
-              className="group border-2 border-[#00BFA6] text-[#00BFA6] hover:bg-[#00BFA6] hover:text-[#1C1C1E] px-8 py-6 text-lg rounded-xl transition-all"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Demo
-            </Button>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-[#D4AF37]/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-[#D4AF37] rounded-full animate-scroll"></div>
+              {/* Rating Card */}
+              <div className="absolute bottom-8 right-0 -translate-x-8 bg-[#1A1A1A]/80 backdrop-blur-2xl p-6 rounded-[2rem] border border-white/5 shadow-2xl space-y-4 min-w-[220px]">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Avatar key={i} className="h-10 w-10 border-2 border-[#1A1A1A]">
+                      <AvatarImage src={`https://i.pravatar.cc/100?u=${i + 40}`} />
+                      <AvatarFallback>U</AvatarFallback>
+                    </Avatar>
+                  ))}
+                </div>
+                <div className="space-y-1">
+                  <div className="flex space-x-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <svg key={s} className="h-4 w-4 text-[#D4AF37] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.539-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.245 9.397c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.97z" /></svg>
+                    ))}
+                  </div>
+                  <p className="text-sm font-bold text-white leading-tight mt-2">
+                    Loved by <br /> 5k+ Historians
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Scroll-triggered 3D Monument Section */}
-      <section
+      {/* --- INFINITE SCROLL GALLERY --- */}
+      <section className="py-12 bg-black overflow-hidden select-none">
+        <div className="flex animate-marquee">
+          {[...Array(4)].map((_, listIndex) => (
+            <div key={listIndex} className="flex gap-8 items-end pr-8">
+              {[
+                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Colosseum
+                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=800&q=80", // Petra
+                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?q=80&w=1170&auto=format&fit=crop", // Machu Picchu
+                "https://images.unsplash.com/photo-1470075446540-4391a96ec621?q=80&w=1074&auto=format&fit=crop", // Golconda Fort
+                "https://images.unsplash.com/photo-1723871568897-d0680195f20a?q=80&w=735&auto=format&fit=crop", // Konark Sun Temple
+                "https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop", // Hampi Ruins
+              ].map((src, i) => (
+                <div
+                  key={i}
+                  className={`relative flex-shrink-0 transition-transform hover:scale-[1.02] duration-500 cursor-pointer
+                    ${i % 2 === 0
+                      ? "w-[450px] aspect-[16/10] rounded-[3rem]"
+                      : "w-[300px] aspect-[3/4] rounded-t-full"} 
+                    overflow-hidden border border-white/5 shadow-2xl`}
+                >
+                  <img src={src} alt="Historical site" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- WHO WE ARE / STATS SECTION --- */}
+      <section className="py-32 bg-[#111111] px-6">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+          {/* Arched Thumbnail */}
+          <div className="mb-8 w-16 h-20 rounded-t-full overflow-hidden border border-white/10 shadow-xl">
+            <img
+              src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop" // Hampi (Verified)
+              alt="Ancient Temple"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-10">
+            <span className="text-sm font-medium text-[#BBBBBB]">Who we are</span>
+          </div>
+
+          <h2
+            className="text-3xl md:text-[40px] font-medium leading-[1.3] text-white max-w-4xl mb-24"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+          >
+            We’re a team of historians, digital artists, and developers bringing the past to life. From broken ruins to complete cities, we deliver academically accurate reconstructions.
+          </h2>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 w-full pt-12">
+            {[
+              { value: "50+", label: "Civilizations Archived" },
+              { value: "500+", label: "Historical Monuments" },
+              { value: "1M+", label: "Virtual Visitors" },
+              { value: "100%", label: "Accuracy Verified" }
+            ].map((stat, i) => (
+              <div key={i} className="space-y-4">
+                <div
+                  className="text-5xl font-medium text-white"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {stat.value}
+                </div>
+                <div
+                  className="text-sm text-[#888888] font-medium uppercase tracking-wider"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --- DESIGN INTENTION SECTION --- */}
+      <section className="pb-32 px-6 bg-[#111111]">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 h-full">
+          {/* Left Content Card */}
+          <div className="bg-[#1A1A1A] rounded-[3rem] p-12 md:p-20 relative overflow-hidden flex flex-col justify-between border border-white/5">
+            {/* Ghosted Background Text */}
+            <div
+              className="absolute bottom-[-10%] left-[-5%] text-[12rem] font-bold text-white/[0.02] select-none pointer-events-none whitespace-nowrap"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+            >
+              TimeLeap*
+            </div>
+
+            <div className="relative z-10 space-y-12">
+              <h2
+                className="text-3xl md:text-5xl font-medium leading-[1.2] text-white"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                We preserve with intention, creating digital archives that reflect history, not just imagination.
+              </h2>
+
+              <ul
+                className="space-y-6 text-xl text-[#888888] font-medium"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                {[
+                  "1: Academic Research & Validation",
+                  "2: Photorealistic Texture Mapping",
+                  "3: Interactive 3D Environments"
+                ].map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Arched Mini-Thumbnails */}
+            <div className="relative z-10 flex space-x-4 mt-20">
+              {[
+                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=80", // Colosseum (Verified)
+                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=200&q=80", // Petra (Verified)
+                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?w=200&q=80"  // Machu Picchu (Verified)
+              ].map((src, i) => (
+                <div key={i} className="w-16 h-24 rounded-t-full overflow-hidden border border-white/10 shadow-lg transform translate-y-4 hover:translate-y-0 transition-transform duration-500">
+                  <img src={src} alt="Architecture detail" className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Image Container */}
+          <div className="rounded-[3rem] overflow-hidden h-[600px] lg:h-auto border border-white/5 shadow-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=1200&q=80"
+              alt="Premium Interior"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div >
+      </section >
+
+      {/* --- OUR SERVICES SECTION --- */}
+      < section className="py-32 px-6 bg-[#111111]" >
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-20">
+            <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
+              <span className="text-sm font-medium text-[#BBBBBB]">Our services</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              Services that bridge time
+            </h2>
+            <p className="text-[#888888] text-lg max-w-2xl" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              Explore our suite of digital heritage tools designed to bring history to life.
+            </p>
+          </div>
+
+          {/* Service Grid */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {[
+              {
+                title: "3D Reconstruction",
+                desc: "We rebuild lost structures from the ground up using archaeological data and cutting-edge 3D modeling.",
+                icon: (
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                ),
+                hasAccent: true,
+                accentImg: "https://images.unsplash.com/photo-1545324418-cc1a3d2e2764?w=800&q=80"
+              },
+              {
+                title: "Past vs Present",
+                desc: "We enable direct visual comparison between current ruins and their original historical majesty.",
+                icon: (
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )
+              },
+              {
+                title: "Interactive History",
+                desc: "We create immersive environments where you can walk through history, not just look at it.",
+                icon: (
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                )
+              },
+              {
+                title: "Digital Archiving",
+                desc: "We preserve heritage for future generations through high-fidelity digital scans and cloud archiving.",
+                icon: (
+                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                  </svg>
+                ),
+                hasAccent: true,
+                accentImg: "https://images.unsplash.com/photo-1548013666-3d2e2936999a?w=800&q=80"
+              }
+            ].map((service, i) => (
+              <div
+                key={i}
+                className="group bg-[#1A1A1A] rounded-[3rem] p-12 lg:p-16 border border-white/5 relative overflow-hidden flex flex-col items-start transition-all duration-500 hover:bg-[#1E1E1E] hover:-translate-y-2 hover:shadow-2xl animate-fade-in-up"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              >
+                {/* Floating Image Accent */}
+                {service.hasAccent && (
+                  <div className="absolute top-12 -right-24 w-48 aspect-[3/4] rounded-t-full overflow-hidden border border-white/10 opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rotate-6">
+                    <img src={service.accentImg} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+
+                <div className="w-20 h-20 rounded-full bg-[#111111] flex items-center justify-center mb-10 border border-white/5 group-hover:scale-110 transition-transform duration-500">
+                  {service.icon}
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-medium text-white mb-4" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  {service.title}
+                </h3>
+                <p className="text-[#888888] text-lg leading-relaxed mb-10 max-w-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  {service.desc}
+                </p>
+                <Button
+                  variant="outline"
+                  className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all group-hover:bg-[#D4AF37] group-hover:text-black group-hover:border-transparent"
+                >
+                  View in detail
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section >
+
+      {/* --- FEATURED PROJECT SECTION (HAMPI) --- */}
+      < section
         ref={modelSectionRef}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden py-24 px-4"
+        className="relative min-h-[140vh] flex items-center justify-center perspective-1000 py-32"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-[#1C1C1E] to-background"></div>
+        <div className="max-w-7xl mx-auto w-full px-4">
+          <div className="grid lg:grid-cols-2 gap-24 items-center">
+            {/* 3D Model Visual */}
+            <div className="relative order-2 lg:order-1">
+              <div className="relative aspect-square w-full max-w-2xl mx-auto">
+                <div className="absolute inset-0 bg-[#D4AF37]/5 rounded-full blur-[100px]"></div>
+                <div className="relative w-full h-full">
+                  <Canvas className="w-full h-full" camera={{ position: [0, 0, 5], fov: 45 }}>
+                    <ambientLight intensity={1.5} />
+                    <directionalLight position={[10, 10, 5]} intensity={2.5} />
+                    <Suspense fallback={<Loader />}>
+                      <Model scrollProgress={scrollProgress} />
+                    </Suspense>
+                    <OrbitControls
+                      enableZoom={false}
+                      enablePan={false}
+                      autoRotate
+                      autoRotateSpeed={2}
+                    />
+                  </Canvas>
+                </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* 3D Model Container */}
-            <div className="relative flex items-center justify-center w-full">
-              <div className="relative w-[520px] h-[520px] transition-all duration-700 ease-out">
-
-
-                {/* Canvas Wrapper */}
-                <div className="relative w-full max-w-lg aspect-square perspective-1000">
-                  <div className="relative w-full max-w-3xl aspect-square">
-
-                    <Canvas className="w-full h-full"
-                      camera={{ position: [0, 0, 5], fov: 50 }} dpr={[1, 2]}>
-
-                      <ambientLight intensity={1.2} />
-                      <directionalLight position={[5, 5, 5]} intensity={2} />
-
-                      <Suspense fallback={<Loader />}>
-                        <Model scrollProgress={scrollProgress} />
-                      </Suspense>
-
-                      <OrbitControls
-                        enableZoom
-                        enablePan={false}
-                        autoRotate
-                        autoRotateSpeed={1.5}
-                      />
-                    </Canvas>
-
+                {/* Floating Labels (Buildio Inspired) */}
+                <div className="absolute -top-10 -right-10 bg-muted/40 backdrop-blur-xl p-6 rounded-2xl border border-border/50 space-y-2 hidden md:block">
+                  <div className="text-[#D4AF37] text-2xl font-bold">85%</div>
+                  <div className="text-xs font-semibold tracking-widest text-muted-foreground uppercase leading-tight">Reconstruction <br />Progress</div>
+                  <div className="w-24 h-1 bg-[#D4AF37]/30 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#D4AF37]" style={{ width: '85%' }}></div>
                   </div>
                 </div>
-
-                {/* Glowing rings */}
-                <div
-                  className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-700"
-                  style={{
-                    boxShadow: `0 0 ${40 + scrollProgress * 80}px ${10 + scrollProgress * 30}px rgba(212, 175, 55, ${0.2 + scrollProgress * 0.3})`
-                  }}
-                />
-
-                {/* Rotating border */}
-                <div
-                  className="absolute -inset-4 rounded-3xl pointer-events-none transition-all duration-1000"
-                  style={{
-                    background: `conic-gradient(from ${scrollProgress * 360}deg, transparent, #D4AF37, transparent)`,
-                    opacity: scrollProgress * 0.6,
-                    padding: '2px',
-                    WebkitMask:
-                      'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                    WebkitMaskComposite: 'xor',
-                    maskComposite: 'exclude'
-                  }}
-                />
-
-                {/* Floating particles */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {[...Array(6)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-2 h-2 bg-[#D4AF37] rounded-full blur-sm"
-                      style={{
-                        top: `${20 + i * 15}%`,
-                        left: `${10 + (i % 2) * 80}%`,
-                        opacity: scrollProgress * 0.6,
-                        animation: `float ${3 + i * 0.5}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.2}s`
-                      }}
-                    />
-                  ))}
-                </div>
-
               </div>
             </div>
 
-
-            {/* Content */}
-            <div
-              className="space-y-6 transition-all duration-700"
-              style={{
-                opacity: scrollProgress,
-                transform: `translateX(${(1 - scrollProgress) * 50}px)`
-              }}
-            >
-              <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-[#D4AF37]/30 rounded-full px-4 py-2 mb-4">
-                <Layers className="h-4 w-4 text-[#D4AF37]" />
-                <span className="text-sm text-[#E0E0E0]">Explore in Full 3D
-                </span>
+            {/* Project Content */}
+            <div className="space-y-10 order-1 lg:order-2">
+              <div className="space-y-4">
+                <div className="inline-flex items-center space-x-2 text-[#D4AF37]">
+                  <Layers className="h-5 w-5" />
+                  <span className="text-sm font-bold tracking-[0.2em] uppercase">FEATURED PROJECT</span>
+                </div>
+                <h2 className="text-6xl md:text-7xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  {monumentSite.name}
+                </h2>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                <span className="bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] bg-clip-text text-transparent">
-                  {monumentSite.name}
-                </span>
-              </h2>
-
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed italic">
                 {monumentSite.description}
               </p>
 
-              <div className="flex flex-wrap gap-4 pt-4">
-                <div className="flex items-center space-x-2 bg-gradient-to-r from-[#D4AF37]/10 to-transparent px-4 py-2 rounded-lg border border-[#D4AF37]/30">
-                  <MapPin className="h-4 w-4 text-[#D4AF37]" />
-                  <span className="text-sm">{monumentSite.location}</span>
+              <div className="grid grid-cols-2 gap-8 py-8 border-y border-border/50">
+                <div className="space-y-1">
+                  <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-[#D4AF37]" /> Location
+                  </div>
+                  <div className="text-xl font-semibold">{monumentSite.location}</div>
                 </div>
-                <div className="flex items-center space-x-2 bg-gradient-to-r from-[#00BFA6]/10 to-transparent px-4 py-2 rounded-lg border border-[#00BFA6]/30">
-                  <Calendar className="h-4 w-4 text-[#00BFA6]" />
-                  <span className="text-sm">Built: {monumentSite.yearBuilt}</span>
+                <div className="space-y-1">
+                  <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center">
+                    <Calendar className="h-4 w-4 mr-2 text-[#00BFA6]" /> Built
+                  </div>
+                  <div className="text-xl font-semibold">{monumentSite.yearBuilt}</div>
                 </div>
               </div>
 
@@ -316,52 +553,33 @@ const Home: React.FC = () => {
                 <Link to={`/project/${monumentSite.id}`}>
                   <Button
                     size="lg"
-                    className="group bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] hover:from-[#E5C04A] hover:to-[#00D4C0] text-[#1C1C1E] font-semibold"
+                    className="bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-background px-12 py-8 rounded-full text-xl font-bold transition-all"
                   >
                     Explore in Full 3D
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-              </div>
-
-              {/* Progress Indicator */}
-              <div className="pt-8">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-                  <span>Reconstruction Progress</span>
-                  <span className="text-[#00BFA6] font-semibold">
-                    {monumentSite.restorationStages[monumentSite.restorationStages.length - 1].progress}%
-                  </span>
-                </div>
-                <div className="h-2 bg-border rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] transition-all duration-1000 rounded-full"
-                    style={{
-                      width: `${scrollProgress * monumentSite.restorationStages[monumentSite.restorationStages.length - 1].progress}%`
-                    }}
-                  ></div>
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* Before/After Section */}
-      <section className="py-24 px-4 bg-gradient-to-b from-background to-[#1C1C1E]/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] bg-clip-text text-transparent">
-                Before & After Reconstruction
-              </span>
+      {/* --- BEFORE/AFTER SLIDER SECTION --- */}
+      < section className="py-32 px-4" >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20 space-y-4">
+            <h2 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Before & After <span className="text-[#00BFA6]">Reconstruction.</span>
             </h2>
-            <p className="text-lg text-muted-foreground">Witness history come alive through digital restoration</p>
+            <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+              Witness history come alive through digital restoration.
+            </p>
           </div>
 
-          <Card className="relative overflow-hidden rounded-2xl shadow-2xl border-2 border-[#D4AF37]/20 bg-card/50 backdrop-blur-sm">
+          <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl">
             <div
               ref={sliderRef}
-              className="relative h-[650px] cursor-ew-resize select-none"
+              className="relative w-full h-full cursor-ew-resize select-none"
               onMouseDown={handleMouseDown}
             >
               {/* After Image */}
@@ -370,7 +588,6 @@ const Home: React.FC = () => {
                 alt="After reconstruction"
                 className="absolute inset-0 w-full h-full object-cover"
               />
-
 
               {/* Before Image with clip */}
               <div
@@ -386,180 +603,194 @@ const Home: React.FC = () => {
 
               {/* Slider Line */}
               <div
-                className="absolute top-0 bottom-0 w-1 bg-white shadow-2xl cursor-ew-resize"
+                className="absolute top-0 bottom-0 w-px bg-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.8)]"
                 style={{ left: `${sliderPosition}%` }}
               >
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-2xl flex items-center justify-center">
-                  <div className="flex space-x-1">
-                    <div className="w-1 h-6 bg-[#D4AF37] rounded-full"></div>
-                    <div className="w-1 h-6 bg-[#D4AF37] rounded-full"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-background border-2 border-[#D4AF37] rounded-full flex items-center justify-center shadow-2xl">
+                  <div className="flex space-x-0.5">
+                    <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
+                    <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
                   </div>
                 </div>
               </div>
 
-              {/* Labels */}
-              <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                Before
-              </div>
-              <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                After
-              </div>
+              <div className="absolute top-8 left-8 bg-black/40 backdrop-blur-xl px-6 py-2 rounded-full border border-white/20 text-sm font-bold tracking-widest uppercase">Before</div>
+              <div className="absolute top-8 right-8 bg-black/40 backdrop-blur-xl px-6 py-2 rounded-full border border-white/20 text-sm font-bold tracking-widest uppercase text-[#00BFA6]">After</div>
             </div>
-          </Card>
+          </div>
         </div>
-      </section>
+      </section >
 
-      {/* Features Section */}
-      <section className="py-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00BFA6]/5 to-transparent"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Why Choose TimeLeap?
+      {/* --- RECENT PROJECTS SHOWCASE --- */}
+      < section className="py-32 px-6 bg-[#111111]" >
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-24">
+            <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
+              <span className="text-sm font-medium text-[#BBBBBB]">Recent work</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              A Showcase of our recent projects
             </h2>
-            <p className="text-lg text-muted-foreground">Experience history like never before</p>
+            <p className="text-[#888888] text-lg max-w-2xl" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              From initial excavation to digital reconstruction, see how we bring history back to life.
+            </p>
+          </div>
+
+          {/* Vertical Projects Stack */}
+          <div className="space-y-12">
+            {[
+              historicalSites[0], // Hampi
+              historicalSites[1], // Colosseum
+              historicalSites[2]  // Petra
+            ].map((project, i) => (
+              <div
+                key={i}
+                className="group bg-[#1A1A1A] rounded-[3.5rem] p-4 lg:p-8 border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E]"
+              >
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                  {/* Left Content */}
+                  <div className="p-8 lg:p-12 space-y-8">
+                    <h3 className="text-3xl md:text-4xl font-medium text-white leading-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                      {project.name}
+                    </h3>
+                    <p className="text-[#888888] text-lg leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-6 pt-4">
+                      <div className="flex items-center space-x-2 text-white/70">
+                        <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                        <span className="text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>{project.architectureType}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-white/70">
+                        <MapPin className="w-4 h-4 text-[#D4AF37]" />
+                        <span className="text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>{project.location}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-6">
+                      <Button
+                        variant="outline"
+                        className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all"
+                      >
+                        View in detail
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Right Image (Arched) */}
+                  <div className="aspect-[16/11] lg:aspect-auto h-full min-h-[400px] rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative">
+                    {/* Arched Clipping Mask (CSS approach) */}
+                    <div className="absolute inset-0 overflow-hidden rounded-t-[10rem] md:rounded-t-[15rem]">
+                      <img
+                        src={project.thumbnail}
+                        alt={project.name}
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section >
+
+      {/* --- TESTIMONIALS SECTION --- */}
+      < section className="py-32 px-4" >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              Trusted by history experts
+            </h2>
+            <p className="text-[#888888] text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              TimeLeap is transforming how we preserve and experience our collective heritage.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: Globe,
-                title: "Global Coverage",
-                description: "Access thousands of historical sites from every corner of the world"
+                id: 1,
+                name: "Dr. Elena Rossi",
+                role: "Senior Archeologist",
+                quote: "TimeLeap's 3D reconstructions provide a level of detail that was previously impossible. It's a game-changer for digital heritage preservation.",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80"
               },
               {
-                icon: Clock3,
-                title: "Time Travel",
-                description: "View sites at different points in history with accurate reconstructions"
+                id: 2,
+                name: "Marcus Aurelius",
+                role: "History Educator",
+                quote: "My students are finally engaged with history. Instead of reading about ruins, they're walking through them in Full 3D.",
+                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80"
               },
               {
-                icon: Layers,
-                title: "3D Exploration",
-                description: "Interactive 3D models you can explore from every angle"
+                id: 3,
+                name: "Sarah Jenkins",
+                role: "Heritage Director",
+                quote: "The past vs present comparison is the most intuitive tool I've seen for explaining architectural evolution to the public.",
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80"
               }
-            ].map((feature, index) => (
-              <Card
-                key={index}
-                className="group relative p-8 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-[#D4AF37]/50 transition-all hover:shadow-2xl hover:-translate-y-2 overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#D4AF37]/10 to-transparent rounded-bl-full transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform"></div>
-
-                <div className="relative z-10">
-                  <div className="mb-4 inline-flex p-3 bg-gradient-to-br from-[#D4AF37]/20 to-[#00BFA6]/20 rounded-xl">
-                    <feature.icon className="h-8 w-8 text-[#D4AF37]" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Sites Preview */}
-      <section className="py-24 px-4 bg-[#1C1C1E]/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Featured Sites
-              </h2>
-              <p className="text-lg text-muted-foreground">Explore our most popular reconstructions</p>
-            </div>
-            <Link to="/explore">
-              <Button variant="outline" className="border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#1C1C1E]">
-                View All
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {historicalSites.slice(0, 3).map((site) => (
-              <Link
-                key={site.id}
-                to={`/project/${site.id}`}
-                className="group"
-              >
-                <Card className="overflow-hidden bg-card/50 backdrop-blur-sm border-2 border-border hover:border-[#D4AF37]/50 transition-all hover:shadow-2xl">
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={site.thumbnail}
-                      alt={site.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-xl font-bold text-white mb-1">{site.name}</h3>
-                      <p className="text-sm text-white/80">{site.location}</p>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{site.era}</span>
-                      <span className="text-sm font-semibold text-[#00BFA6]">View in 3D</span>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-24 px-4 bg-gradient-to-b from-transparent to-[#1C1C1E]/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-              What Experts Say
-            </h2>
-            <p className="text-lg text-muted-foreground">Trusted by historians and archaeologists worldwide</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="p-6 bg-card/50 backdrop-blur-sm border-2 border-border hover:border-[#00BFA6]/50 transition-all">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Avatar className="h-12 w-12 border-2 border-[#D4AF37]">
-                    <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                    <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+            ].map((test) => (
+              <div key={test.id} className="p-10 bg-[#1A1A1A] rounded-[3rem] border border-white/5 space-y-8 flex flex-col justify-between hover:bg-[#1E1E1E] transition-colors">
+                <p className="text-xl font-medium leading-relaxed italic text-white/90">
+                  "{test.quote}"
+                </p>
+                <div className="flex items-center space-x-5">
+                  <Avatar className="h-16 w-16 border border-white/10">
+                    <AvatarImage src={test.avatar} />
+                    <AvatarFallback>{test.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-semibold">{testimonial.name}</h4>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <div className="text-xl font-bold text-white">{test.name}</div>
+                    <div className="text-[#D4AF37] text-sm font-bold uppercase tracking-widest">{test.role}</div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground italic">"{testimonial.quote}"</p>
-              </Card>
+              </div>
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
-      {/* CTA Section */}
-      <section className="py-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/20 via-transparent to-[#00BFA6]/20"></div>
+      {/* --- FINAL CTA SECTION (MATCHING REFERENCE) --- */}
+      < section className="py-24 px-6 bg-[#111111]" >
+        <div className="max-w-7xl mx-auto">
+          <div className="relative h-[650px] rounded-[3.5rem] overflow-hidden flex items-center justify-center border border-white/5 shadow-3xl">
+            {/* Background Image */}
+            <img
+              src="https://images.unsplash.com/photo-1666240073343-9801b7b5b949?q=80&w=1600&auto=format&fit=crop"
+              alt="Historical Atmosphere"
+              className="absolute inset-0 w-full h-full object-cover grayscale-[0.2]"
+            />
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Ready to Explore History?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Join thousands of history enthusiasts and start your journey through time today.
-          </p>
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-[#D4AF37] to-[#00BFA6] hover:from-[#E5C04A] hover:to-[#00D4C0] text-[#1C1C1E] font-semibold px-12 py-6 text-lg rounded-xl shadow-2xl"
-          >
-            Start Exploring
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+            {/* Transparent Dark Overlay Card */}
+            <div className="relative z-10 w-full max-w-4xl bg-black/40 backdrop-blur-2xl rounded-[3rem] p-12 md:p-20 flex flex-col items-center text-center border border-white/10 shadow-2xl mx-8">
+              <h2
+                className="text-4xl md:text-7xl font-bold text-white mb-8 leading-[1.1]"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Ready to Explore <br /> History?
+              </h2>
+              <p
+                className="text-lg md:text-2xl text-white/80 max-w-2xl mb-12 leading-relaxed"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Join thousands of history enthusiasts and start your journey through time today.
+              </p>
+
+              <Button
+                size="lg"
+                className="bg-white text-black hover:bg-white/90 px-12 py-8 text-xl rounded-full transition-transform hover:scale-105 font-bold shadow-xl"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Start Exploring
+              </Button>
+            </div>
+          </div>
         </div>
-      </section>
-    </div>
+      </section >
+    </div >
   );
 };
 
