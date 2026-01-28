@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Html, useProgress } from '@react-three/drei';
 import { Link } from 'react-router-dom';
@@ -7,26 +8,209 @@ import { Button } from '../components/ui/button';
 import { historicalSites } from '../mock';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 
-function Model({ scrollProgress = 0 }: { scrollProgress: number }) {
-  const group = useRef<any>();
-  const { scene } = useGLTF('/models3d/hampi_test.glb') as any;
 
-  useEffect(() => {
-    scene.position.set(0, 0, 0);
-    scene.scale.set(4, 4, 4);
-  }, [scene]);
 
-  useFrame((state: any) => {
-    if (group.current) {
-      group.current.rotation.y = state.clock.getElapsedTime() * 0.5 + scrollProgress * 2;
-      group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1 + scrollProgress * 0.5;
-    }
+
+// Why Choose Section Component with Advanced Animations
+function WhyChooseSection() {
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
   });
 
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -140]);
+
+  // Scroll-triggered animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const benefits = [
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      title: "Academic Accuracy",
+      description: "Every reconstruction is verified by historians and archaeologists, ensuring authenticity backed by scholarly research."
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+        </svg>
+      ),
+      title: "Immersive 3D Experience",
+      description: "Walk through ancient cities in fully navigable 3D environments with photorealistic textures and lighting."
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
+      title: "AI-Powered Reconstruction",
+      description: "Our advanced AI analyzes ruins and historical data to generate accurate visualizations of lost architecture."
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      title: "Global Heritage",
+      description: "Explore monuments from every continent-from Roman ruins to Asian temples to Mesoamerican pyramids."
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      ),
+      title: "VR Ready",
+      description: "Experience history in virtual reality with full compatibility for all major VR headsets and platforms."
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+      title: "Expert Team",
+      description: "Our team combines archaeologists, 3D artists, historians, and AI engineers to deliver unmatched quality."
+    }
+  ];
+
   return (
-    <group ref={group}>
-      <primitive object={scene} />
-    </group>
+    <section ref={sectionRef} className="py-24 bg-[#0a0a0a] px-6 lg:px-20 relative overflow-hidden">
+      {/* Floating Particles Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-[#D4AF37]/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `floatParticle ${5 + Math.random() * 10}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 5}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-[1400px] mx-auto relative z-10">
+        {/* Heading with animation */}
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+          >
+            Why Choose <span className="text-[#D4AF37] animate-pulse">TimeLeap</span>
+          </h2>
+          <p className="text-[#888888] text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            The world's most advanced platform for historical reconstruction and heritage preservation
+          </p>
+        </div>
+
+        {/* Benefits Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {benefits.map((benefit, index) => {
+            const y = [y1, y2, y3][index % 3];
+            return (
+              <motion.div
+                key={index}
+                className={`group relative bg-gradient-to-br from-[#111111] to-[#0a0a0a] rounded-2xl p-8 border border-white/5 
+                  transition-all duration-700 ease-out cursor-pointer
+                  hover:scale-[1.02]
+                  ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
+                style={{
+                  y,
+                  transitionDelay: isVisible ? `${index * 100}ms` : '0ms',
+                  perspective: '1000px'
+                }}
+              >
+                {/* Animated Glow Border */}
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: 'linear-gradient(45deg, transparent, #D4AF37, transparent)',
+                    backgroundSize: '200% 200%',
+                    animation: 'glowBorder 2s linear infinite',
+                    padding: '1px',
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                  }}
+                />
+
+                {/* Glow Effect on Hover */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37]/0 via-[#D4AF37]/20 to-[#D4AF37]/0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+
+                {/* Icon with Advanced Animation */}
+                <div
+                  className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4AF37]/20 to-[#D4AF37]/5 flex items-center justify-center text-[#D4AF37] mb-6 
+                  transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-lg group-hover:shadow-[#D4AF37]/30"
+                >
+                  {/* Pulsing Ring */}
+                  <div className="absolute inset-0 rounded-2xl border-2 border-[#D4AF37]/30 opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                  <div className="relative z-10 group-hover:animate-bounce">
+                    {benefit.icon}
+                  </div>
+                </div>
+
+                {/* Title with Underline Animation */}
+                <h3
+                  className="relative text-xl font-bold text-white mb-3 group-hover:text-[#D4AF37] transition-colors duration-300"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {benefit.title}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-500" />
+                </h3>
+
+                {/* Description with Fade */}
+                <p
+                  className="text-[#888888] text-sm leading-relaxed group-hover:text-[#bbb] transition-colors duration-500"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {benefit.description}
+                </p>
+
+                {/* Floating Number */}
+                <div
+                  className="absolute top-4 right-4 text-6xl font-black text-white/[0.03] group-hover:text-[#D4AF37]/10 transition-colors duration-500"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  0{index + 1}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -42,6 +226,299 @@ function Loader() {
 }
 
 useGLTF.preload('/models3d/hampi_test.glb');
+useGLTF.preload('/models3d/model_before_hampi.glb');
+useGLTF.preload('/models3d/model_after_hampi.glb');
+useGLTF.preload('/models3d/colosseum+3d+model.glb');
+useGLTF.preload('/models3d/model_before_corfe.glb');
+
+
+// Features Section Data
+const FEATURES_DATA = [
+  {
+    id: 'research',
+    step: '01',
+    label: 'Research',
+    title: 'Historical Research & Analysis',
+    subtitle: 'Every reconstruction begins with truth.',
+    description: 'Our team of historians and archaeologists analyze ancient texts, excavation reports, and scholarly papers to ensure every detail is academically verified before modeling begins.',
+    img: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    )
+  },
+  {
+    id: 'modeling',
+    step: '02',
+    label: 'Modeling',
+    title: '3D Architectural Modeling',
+    subtitle: 'From ruins to complete structures.',
+    description: 'Using photogrammetry and CAD tools, we rebuild lost architecture stone by stone. Each model respects original proportions, construction techniques, and spatial relationships.',
+    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+      </svg>
+    )
+  },
+  {
+    id: 'texturing',
+    step: '03',
+    label: 'Texturing',
+    title: 'Photorealistic Texturing',
+    subtitle: 'Authentic materials and surfaces.',
+    description: 'We recreate original paint colors, stone weathering, and material properties based on pigment analysis and archaeological evidence to achieve museum-quality realism.',
+    img: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+      </svg>
+    )
+  },
+  {
+    id: 'animation',
+    step: '04',
+    label: 'Animation',
+    title: 'Immersive Walkthroughs',
+    subtitle: 'Experience history in motion.',
+    description: 'Navigate through ancient streets, temples, and palaces with cinematic camera movements. Our animations bring context to how these spaces were actually used.',
+    img: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    )
+  },
+  {
+    id: 'validation',
+    step: '05',
+    label: 'Validation',
+    title: 'Academic Peer Review',
+    subtitle: 'Verified by leading historians.',
+    description: 'Before publication, every reconstruction undergoes rigorous review by domain experts, ensuring our work meets the highest standards of historical accuracy.',
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )
+  },
+  {
+    id: 'delivery',
+    step: '06',
+    label: 'Delivery',
+    title: 'Multi-Platform Access',
+    subtitle: 'History at your fingertips.',
+    description: 'Access reconstructions via web, VR headsets, or mobile devices. Our platform supports educational institutions, museums, and individual explorers worldwide.',
+    img: 'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=800&q=80',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      </svg>
+    )
+  }
+];
+
+function ProcessFeaturesSection() {
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const feature = FEATURES_DATA[activeFeature];
+
+  // Scroll-triggered animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-rotate through features every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % FEATURES_DATA.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="pt-32 pb-24 bg-gradient-to-b from-[#0a0a0a] via-[#0d0d0d] to-[#0a0a0a] px-6 lg:px-20 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#D4AF37]/5 rounded-full blur-[150px]" />
+      </div>
+
+      <div className="max-w-[1400px] mx-auto relative z-10">
+        {/* Section Header */}
+        <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <span className="inline-block px-4 py-2 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-sm font-medium mb-6">
+            Our Process
+          </span>
+          <h2
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+          >
+            How We Bring <span className="text-[#D4AF37]">History</span> to Life
+          </h2>
+          <p className="text-[#888888] text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            A meticulous six-step process that transforms archaeological data into immersive historical experiences
+          </p>
+        </div>
+
+        {/* Timeline Navigation */}
+        <div className={`mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="flex items-center justify-between max-w-4xl mx-auto relative">
+            {/* Progress Line */}
+            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/10 -translate-y-1/2" />
+            <div
+              className="absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#D4AF37]/50 -translate-y-1/2 transition-all duration-500"
+              style={{ width: `${(activeFeature / (FEATURES_DATA.length-1)) * 100}% ` }}
+            />
+
+            {/* Step Indicators */}
+            {FEATURES_DATA.map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveFeature(index)}
+                className="relative z-10 flex flex-col items-center gap-3 group transition-all duration-300"
+              >
+                {/* Circle */}
+                <div
+                  className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all duration-500
+                    ${index <= activeFeature
+                      ? 'bg-[#D4AF37] border-[#D4AF37] text-black'
+                      : 'bg-[#0a0a0a] border-white/20 text-white/50 group-hover:border-white/40'
+                    }
+                    ${index === activeFeature ? 'scale-125 shadow-lg shadow-[#D4AF37]/30' : ''}
+            `}
+                >
+                  {item.icon}
+                </div>
+                {/* Label */}
+                <span
+                  className={`text-xs font-medium whitespace-nowrap transition-colors duration-300
+                    ${index === activeFeature ? 'text-[#D4AF37]' : 'text-white/50 group-hover:text-white/70'}
+            `}
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Feature Content */}
+        <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left-Image */}
+            <div className="relative group">
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-white/10">
+                <img
+                  key={feature.id}
+                  src={feature.img}
+                  alt={feature.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                {/* Step Badge */}
+                <div className="absolute top-6 left-6 px-4 py-2 rounded-full bg-[#D4AF37] text-black text-sm font-bold">
+                  Step {feature.step}
+                </div>
+              </div>
+              {/* Glow */}
+              <div className="absolute -inset-4 bg-[#D4AF37]/10 rounded-3xl blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </div>
+
+            {/* Right-Content */}
+            <div className="space-y-8">
+              {/* Step Number */}
+              <div
+                className="text-8xl font-black text-white/5"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                {feature.step}
+              </div>
+
+              {/* Title */}
+              <div className="space-y-4 -mt-16">
+                <h3
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold text-white"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {feature.title}
+                </h3>
+                <p
+                  className="text-[#D4AF37] font-medium text-lg"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                >
+                  {feature.subtitle}
+                </p>
+              </div>
+
+              {/* Description */}
+              <p
+                className="text-[#888888] text-lg leading-relaxed"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                {feature.description}
+              </p>
+
+              {/* Progress Indicator */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#D4AF37] to-[#D4AF37]/50 rounded-full transition-all duration-500"
+                    style={{ width: `${((activeFeature + 1) / FEATURES_DATA.length) * 100}% ` }}
+                  />
+                </div>
+                <span className="text-white/50 text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                  {activeFeature + 1} / {FEATURES_DATA.length}
+                </span>
+              </div>
+
+              {/* Navigation Arrows */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setActiveFeature(prev => prev === 0 ? FEATURES_DATA.length-1 : prev-1)}
+                  className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all duration-300"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setActiveFeature(prev => (prev + 1) % FEATURES_DATA.length)}
+                  className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all duration-300"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
 
 const HERO_VIDEOS = [
   "https://ik.imagekit.io/ji2lkjg53/203803-922187125_medium.mp4",
@@ -51,35 +528,36 @@ const HERO_VIDEOS = [
 ];
 
 const Home: React.FC = () => {
-  const [sliderPosition, setSliderPosition] = useState<number>(50);
-  const [isSliderDragging, setIsSliderDragging] = useState<boolean>(false);
-  const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const modelSectionRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
 
-  const monumentSite = historicalSites[0];
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "150%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  // Projects Parallax
+  const projectsRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: projectsScroll } = useScroll({
+    target: projectsRef,
+    offset: ["start end", "end start"]
+  });
+
+  const py1 = useTransform(projectsScroll, [0, 1], [0, -80]);
+  const py2 = useTransform(projectsScroll, [0, 1], [0, -40]);
+  const py3 = useTransform(projectsScroll, [0, 1], [0, -120]);
 
   const handleVideoEnd = () => {
     setCurrentVideoIndex((prev) => (prev + 1) % HERO_VIDEOS.length);
   };
 
-  const handleSliderChange = (e: React.MouseEvent | MouseEvent) => {
-    if (sliderRef.current) {
-      const rect = sliderRef.current.getBoundingClientRect();
-      const clientX = 'clientX' in e ? e.clientX : (e as any).clientX;
-      const x = clientX - rect.left;
-      const percentage = (x / rect.width) * 100;
-      setSliderPosition(Math.max(0, Math.min(100, percentage)));
-    }
-  };
-
-  const handleMouseDown = () => setIsSliderDragging(true);
-  const handleMouseUp = () => setIsSliderDragging(false);
-
   useEffect(() => {
-    const videoElements = document.querySelectorAll('video');
-    videoElements.forEach((video, index) => {
+    const videos = document.querySelectorAll('video');
+    videos.forEach((video, index) => {
       if (index === currentVideoIndex) {
         video.currentTime = 0;
         video.play().catch(() => { });
@@ -89,49 +567,13 @@ const Home: React.FC = () => {
     });
   }, [currentVideoIndex]);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isSliderDragging) {
-        handleSliderChange(e);
-      }
-    };
-
-    if (isSliderDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isSliderDragging]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (modelSectionRef.current) {
-        const rect = modelSectionRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const sectionTop = rect.top;
-        const sectionHeight = rect.height;
-
-        if (sectionTop < windowHeight && sectionTop > -sectionHeight) {
-          const progress = Math.max(0, Math.min(1, 1 - (sectionTop / windowHeight)));
-          setScrollProgress(progress);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-[#111111] text-white overflow-hidden selection:bg-white selection:text-black">
       {/* --- HERO SECTION --- */}
-      <section className="relative min-h-[95vh] flex flex-col justify-center px-6 pt-32 pb-16 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-black">
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Video Background */}
+        <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 bg-black">
           {HERO_VIDEOS.map((src, index) => (
             <video
               key={src}
@@ -150,401 +592,195 @@ const Home: React.FC = () => {
               <source src={src} type="video/mp4" />
             </video>
           ))}
-        </div>
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#111111] to-transparent z-[1]"></div>
-        <div className="max-w-7xl mx-auto w-full relative z-[2] flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="animate-fade-in-up text-center">
-            <h1 className="text-5xl md:text-8xl font-bold mb-8 text-white tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-              TimeLeap
+        </motion.div>
+
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 z-[1] bg-black/40"></div>
+
+        {/* Vignette Effect-Strong edges */}
+        <div
+          className="absolute inset-0 z-[2] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 70% 50%, transparent 0%, transparent 30%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.9) 100%)'
+          }}
+        ></div>
+
+        {/* Left side gradient for text readability */}
+        <div
+          className="absolute inset-0 z-[2] pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)'
+          }}
+        ></div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#111111] via-[#111111]/70 to-transparent z-[3]"></div>
+
+        {/* Content */}
+        <motion.div
+          style={{ y: textY, opacity }}
+          className="max-w-7xl mx-auto w-full relative z-[4] px-6 md:px-12 lg:px-16 pt-24"
+        >
+          <div className="max-w-3xl">
+            {/* Main Title */}
+            <h1
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight mb-8"
+              style={{
+                fontFamily: "'Manrope', sans-serif",
+                color: '#D4AF37'
+              }}
+            >
+              TRAVEL
+              <br />
+              THROUGH
+              <br />
+              TIME
             </h1>
-            <Link to="/upload">
-              <Button
-                variant="outline"
-                className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 px-12 py-8 rounded-full transition-all hover:scale-105 font-bold text-lg"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                Upload Historical Image
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* --- WHO WE ARE / STATS SECTION --- */}
-      <section className="py-32 bg-[#111111] px-6">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          <div className="mb-8 w-16 h-20 rounded-t-full overflow-hidden border border-white/10 shadow-xl">
-            <img
-              src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop"
-              alt="Ancient Temple"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-10">
-            <span className="text-sm font-medium text-[#BBBBBB]">Who we are</span>
-          </div>
-
-          <h2
-            className="text-3xl md:text-[40px] font-medium leading-[1.3] text-white max-w-4xl mb-24"
-            style={{ fontFamily: "'Manrope', sans-serif" }}
-          >
-            We’re a team of historians, digital artists, and developers bringing the past to life. From broken ruins to complete cities, we deliver academically accurate reconstructions.
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 w-full pt-12">
-            {[
-              { value: "50+", label: "Civilizations Archived" },
-              { value: "500+", label: "Historical Monuments" },
-              { value: "1M+", label: "Virtual Visitors" },
-              { value: "100%", label: "Accuracy Verified" }
-            ].map((stat, i) => (
-              <div key={i} className="space-y-4">
-                <div
-                  className="text-5xl font-medium text-white"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  className="text-sm text-[#888888] font-medium uppercase tracking-wider"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- DESIGN INTENTION SECTION --- */}
-      <section className="pb-32 px-6 bg-[#111111]">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 h-full">
-          <div className="bg-[#1A1A1A] rounded-[3rem] p-12 md:p-20 relative overflow-hidden flex flex-col justify-between border border-white/5">
-            <div
-              className="absolute bottom-[-10%] left-[-5%] text-[12rem] font-bold text-white/[0.02] select-none pointer-events-none whitespace-nowrap"
+            {/* Description */}
+            <p
+              className="text-sm md:text-base text-white/70 max-w-md leading-relaxed mb-12"
               style={{ fontFamily: "'Manrope', sans-serif" }}
             >
-              TimeLeap*
-            </div>
-
-            <div className="relative z-10 space-y-12">
-              <h2
-                className="text-3xl md:text-5xl font-medium leading-[1.2] text-white"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                We preserve with intention, creating digital archives that reflect history, not just imagination.
-              </h2>
-
-              <ul
-                className="space-y-6 text-xl text-[#888888] font-medium"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                {[
-                  "1: Academic Research & Validation",
-                  "2: Photorealistic Texture Mapping",
-                  "3: Interactive 3D Environments"
-                ].map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="relative z-10 flex space-x-4 mt-20">
-              {[
-                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=80",
-                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=200&q=80",
-                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?w=200&q=80"
-              ].map((src, i) => (
-                <div key={i} className="w-16 h-24 rounded-t-full overflow-hidden border border-white/10 shadow-lg transform translate-y-4 hover:translate-y-0 transition-transform duration-500">
-                  <img src={src} alt="Architecture detail" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[3rem] overflow-hidden h-[600px] lg:h-auto border border-white/5 shadow-2xl">
-            <img
-              src="https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=1200&q=80"
-              alt="Premium Interior"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* --- OUR SERVICES SECTION --- */}
-      <section className="py-32 px-6 bg-[#111111]" id="services">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center text-center mb-20">
-            <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
-              <span className="text-sm font-medium text-[#BBBBBB]">Our services</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              Services that bridge time
-            </h2>
-            <p className="text-[#888888] text-lg max-w-2xl" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              Explore our suite of digital heritage tools designed to bring history to life.
+              Experience history like never before. Upload any historical image and watch as our AI reconstructs the past, bringing ancient monuments and lost civilizations back to their original glory.
             </p>
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              {
-                title: "3D Reconstruction",
-                desc: "We rebuild lost structures from the ground up using archaeological data and cutting-edge 3D modeling.",
-                icon: (
-                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                ),
-                hasAccent: true,
-                accentImg: "https://images.unsplash.com/photo-1545324418-cc1a3d2e2764?w=800&q=80"
-              },
-              {
-                title: "Past vs Present",
-                desc: "We enable direct visual comparison between current ruins and their original historical majesty.",
-                icon: (
-                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                )
-              },
-              {
-                title: "Interactive History",
-                desc: "We create immersive environments where you can walk through history, not just look at it.",
-                icon: (
-                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                )
-              },
-              {
-                title: "Digital Archiving",
-                desc: "We preserve heritage for future generations through high-fidelity digital scans and cloud archiving.",
-                icon: (
-                  <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                  </svg>
-                ),
-                hasAccent: true,
-                accentImg: "https://images.unsplash.com/photo-1548013666-3d2e2936999a?w=800&q=80"
-              }
-            ].map((service, i) => (
-              <div
-                key={i}
-                className="group bg-[#1A1A1A] rounded-[3rem] p-12 lg:p-16 border border-white/5 relative overflow-hidden flex flex-col items-start transition-all duration-500 hover:bg-[#1E1E1E] hover:-translate-y-2 hover:shadow-2xl"
-              >
-                {service.hasAccent && (
-                  <div className="absolute top-12 -right-24 w-48 aspect-[3/4] rounded-t-full overflow-hidden border border-white/10 opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rotate-6">
-                    <img src={service.accentImg} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
-
-                <div className="w-20 h-20 rounded-full bg-[#111111] flex items-center justify-center mb-10 border border-white/5 group-hover:scale-110 transition-transform duration-500">
-                  {service.icon}
-                </div>
-
-                <h3 className="text-2xl md:text-3xl font-medium text-white mb-4" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                  {service.title}
-                </h3>
-                <p className="text-[#888888] text-lg leading-relaxed mb-10 max-w-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                  {service.desc}
-                </p>
-                <Button
-                  variant="outline"
-                  className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all group-hover:bg-[#D4AF37] group-hover:text-black group-hover:border-transparent"
+            {/* Play Button & CTA */}
+            <div className="flex items-center gap-6">
+              <Link to="/upload">
+                <button
+                  className="w-14 h-14 rounded-full border-2 border-[#D4AF37] flex items-center justify-center hover:bg-[#D4AF37] hover:scale-110 transition-all duration-300 group"
                 >
-                  View in detail
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- FEATURED PROJECT SECTION --- */}
-      <section ref={modelSectionRef} className="relative min-h-[120vh] flex items-center justify-center py-32">
-        <div className="max-w-7xl mx-auto w-full px-6">
-          <div className="grid lg:grid-cols-2 gap-24 items-center">
-            <div className="relative">
-              <div className="relative aspect-square w-full max-w-2xl mx-auto">
-                <div className="absolute inset-0 bg-[#D4AF37]/5 rounded-full blur-[100px]"></div>
-                <div className="relative w-full h-full">
-                  <Canvas className="w-full h-full" camera={{ position: [0, 0, 5], fov: 45 }}>
-                    <ambientLight intensity={1.5} />
-                    <directionalLight position={[10, 10, 5]} intensity={2.5} />
-                    <Suspense fallback={<Loader />}>
-                      <Model scrollProgress={scrollProgress} />
-                    </Suspense>
-                    <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={2} />
-                  </Canvas>
-                </div>
-                <div className="absolute -top-10 -right-10 bg-[#1A1A1A]/80 backdrop-blur-xl p-6 rounded-2xl border border-white/10 space-y-2 hidden md:block">
-                  <div className="text-[#D4AF37] text-2xl font-bold">85%</div>
-                  <div className="text-xs font-semibold tracking-widest text-[#888888] uppercase leading-tight">Reconstruction <br />Progress</div>
-                  <div className="w-24 h-1 bg-[#D4AF37]/30 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#D4AF37]" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <div className="inline-flex items-center space-x-2 text-[#D4AF37]">
-                  <Layers className="h-5 w-5" />
-                  <span className="text-sm font-bold tracking-[0.2em] uppercase">FEATURED PROJECT</span>
-                </div>
-                <h2 className="text-6xl md:text-7xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  {monumentSite.name}
-                </h2>
-              </div>
-
-              <p className="text-xl text-[#888888] leading-relaxed italic">
-                {monumentSite.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
-                <div className="space-y-1">
-                  <div className="text-sm font-bold text-[#888888] uppercase tracking-widest flex items-center">
-                    <MapPin className="h-4 w-4 mr-2 text-[#D4AF37]" /> Location
-                  </div>
-                  <div className="text-xl font-semibold">{monumentSite.location}</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-sm font-bold text-[#888888] uppercase tracking-widest flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-[#00BFA6]" /> Built
-                  </div>
-                  <div className="text-xl font-semibold">{monumentSite.yearBuilt}</div>
-                </div>
-              </div>
-
-              <div className="pt-6">
-                <Link to={`/project/${monumentSite.id}`}>
-                  <Button
-                    size="lg"
-                    className="bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black px-12 py-8 rounded-full text-xl font-bold transition-all"
+                  <svg
+                    className="w-5 h-5 text-[#D4AF37] group-hover:text-black ml-1"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Explore in Full 3D
-                  </Button>
-                </Link>
-              </div>
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </button>
+              </Link>
+              <div
+                className="w-24 h-[2px] bg-white/30"
+              ></div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Video Indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[5] flex gap-2">
+          {HERO_VIDEOS.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentVideoIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentVideoIndex
+                ? 'bg-[#D4AF37] w-6'
+                : 'bg-white/40 hover:bg-white/60'
+                }`}
+            />
+          ))}
         </div>
       </section>
 
-      {/* --- BEFORE/AFTER SLIDER SECTION --- */}
-      <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <h2 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Before & After <span className="text-[#00BFA6]">Reconstruction.</span>
-            </h2>
-            <p className="text-xl text-[#888888] max-w-xl mx-auto">
-              Witness history come alive through digital restoration.
-            </p>
-          </div>
 
-          <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-[3rem] overflow-hidden border-2 border-white/5 shadow-2xl">
-            <div
-              ref={sliderRef}
-              className="relative w-full h-full cursor-ew-resize select-none"
-              onMouseDown={handleMouseDown}
-            >
-              <img src="/images/after.png" alt="After" className="absolute inset-0 w-full h-full object-cover" />
-              <div
-                className="absolute inset-0 overflow-hidden"
-                style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
-              >
-                <img src="/images/before.jpg" alt="Before" className="absolute inset-0 w-full h-full object-cover" />
-              </div>
-              <div
-                className="absolute top-0 bottom-0 w-px bg-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.8)]"
-                style={{ left: `${sliderPosition}%` }}
-              >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-black border-2 border-[#D4AF37] rounded-full flex items-center justify-center shadow-2xl">
-                  <div className="flex space-x-0.5">
-                    <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
-                    <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* --- WHY CHOOSE SECTION --- */}
+      <WhyChooseSection />
+
+      {/* --- OUR PROCESS FEATURES SECTION --- */}
+      <ProcessFeaturesSection />
+
+
 
       {/* --- RECENT PROJECTS SHOWCASE --- */}
-      <section className="py-32 px-6 bg-[#111111]" id="projects">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center text-center mb-24">
-            <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
-              <span className="text-sm font-medium text-[#BBBBBB]">Recent work</span>
+      <section ref={projectsRef} className="pt-24 pb-32 bg-[#0a0a0a] px-6 lg:px-20" id="projects">
+        <div className="max-w-[1400px] mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8"
+          >
+            <div className="max-w-2xl">
+              <span className="text-[#D4AF37] font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Our Portfolio</span>
+              <h2
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Pioneering <span className="text-[#D4AF37]">Digital</span> Archeology
+              </h2>
+              <p className="text-[#888888] text-lg" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                Explore our latest full-scale reconstructions, where academic rigor meets cutting-edge 3D technology.
+              </p>
             </div>
-            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              A Showcase of our recent projects
-            </h2>
-            <p className="text-[#888888] text-lg max-w-2xl" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              From initial excavation to digital reconstruction, see how we bring history back to life.
-            </p>
-          </div>
+            <Link to="/explore">
+              <Button
+                variant="outline"
+                className="border-white/20 hover:bg-white hover:text-black rounded-full px-8 py-6 transition-all"
+              >
+                View All Projects
+              </Button>
+            </Link>
+          </motion.div>
 
-          <div className="space-y-12">
-            {[historicalSites[0], historicalSites[1], historicalSites[2]].map((project, i) => (
-              <div key={i} className="group bg-[#1A1A1A] rounded-[3.5rem] p-4 lg:p-8 border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E]">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                  <div className="p-8 lg:p-12 space-y-8">
-                    <h3 className="text-3xl md:text-4xl font-medium text-white leading-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                      {project.name}
-                    </h3>
-                    <p className="text-[#888888] text-lg leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-6 pt-4">
-                      <div className="flex items-center space-x-2 text-white/70">
-                        <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-                        <span className="text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>{project.architectureType}</span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {historicalSites.slice(0, 3).map((site, index) => {
+              const y = [py1, py2, py3][index % 3];
+              return (
+                <motion.div
+                  key={site.id}
+                  style={{ y }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                >
+                  <Link to={`/ project / ${site.id} `} className="group relative block aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 bg-[#111111]">
+                    <img
+                      src={site.thumbnail}
+                      alt={site.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+
+                    <div className="absolute inset-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="flex items-center gap-2 text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-3">
+                        <MapPin className="w-4 h-4" />
+                        {site.location}
                       </div>
-                      <div className="flex items-center space-x-2 text-white/70">
-                        <MapPin className="w-4 h-4 text-[#D4AF37]" />
-                        <span className="text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>{project.location}</span>
+                      <h3 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                        {site.name}
+                      </h3>
+                      <p className="text-white/60 text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                        {site.description}
+                      </p>
+
+                      <div className="mt-6 flex items-center text-white text-sm font-bold group-hover:text-[#D4AF37] transition-colors">
+                        Explore Project
+                        <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                       </div>
                     </div>
-                    <div className="pt-6">
-                      <Link to={`/project/${project.id}`}>
-                        <Button
-                          variant="outline"
-                          className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all"
-                        >
-                          View in detail
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="aspect-[16/11] lg:aspect-auto h-full min-h-[400px] rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative">
-                    <div className="absolute inset-0 overflow-hidden rounded-t-[10rem] md:rounded-t-[15rem]">
-                      <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
+
       {/* --- TESTIMONIALS SECTION --- */}
-      <section className="py-32 px-6" id="testimonials">
+      <section className="py-32 px-6 bg-[#111111]" id="testimonials">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              Trusted by history experts
+            <span className="text-[#D4AF37] font-bold tracking-[0.2em] uppercase text-sm mb-4 block">Testimonials</span>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              Trusted by <span className="text-[#D4AF37]">Global</span> Experts
             </h2>
             <p className="text-[#888888] text-lg max-w-2xl mx-auto" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              TimeLeap is transforming how we preserve and experience our collective heritage.
+              TimeLeap is transforming how we preserve and experience our collective heritage, used by leading institutions worldwide.
             </p>
           </div>
 
@@ -592,39 +828,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* --- FINAL CTA SECTION --- */}
-      <section className="py-24 px-6 bg-[#111111]">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative h-[650px] rounded-[3.5rem] overflow-hidden flex items-center justify-center border border-white/5 shadow-3xl">
-            <img
-              src="https://images.unsplash.com/photo-1666240073343-9801b7b5b949?q=80&w=1600&auto=format&fit=crop"
-              alt="Historical Atmosphere"
-              className="absolute inset-0 w-full h-full object-cover grayscale-[0.2]"
-            />
-            <div className="relative z-10 w-full max-w-4xl bg-black/40 backdrop-blur-2xl rounded-[3rem] p-12 md:p-20 flex flex-col items-center text-center border border-white/10 shadow-2xl mx-8">
-              <h2
-                className="text-4xl md:text-7xl font-bold text-white mb-8 leading-[1.1]"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                Ready to Explore <br /> History?
-              </h2>
-              <p
-                className="text-lg md:text-2xl text-white/80 max-w-2xl mb-12 leading-relaxed"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                Join thousands of history enthusiasts and start your journey through time today.
-              </p>
-              <Button
-                size="lg"
-                className="bg-white text-black hover:bg-white/90 px-12 py-8 text-xl rounded-full transition-transform hover:scale-105 font-bold shadow-xl"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              >
-                Start Exploring
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
