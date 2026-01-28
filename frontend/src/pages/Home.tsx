@@ -1,34 +1,23 @@
-// --- CHANGE 1: Add these imports for 3D functionality ---
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls, Html, useProgress } from '@react-three/drei';
-// --------------------------------------------------------
-
-
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Sparkles, Globe, Clock3, Layers, MapPin, Calendar } from 'lucide-react';
+import { Sparkles, Layers, MapPin, Calendar } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
-import { historicalSites, testimonials, HistoricalSite, Testimonial } from '../mock';
+import { historicalSites } from '../mock';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
-
-
 
 function Model({ scrollProgress = 0 }: { scrollProgress: number }) {
   const group = useRef<any>();
   const { scene } = useGLTF('/models3d/hampi_test.glb') as any;
 
   useEffect(() => {
-
     scene.position.set(0, 0, 0);
-
-
-    scene.scale.set(4, 4, 4);  //3d model size setting
+    scene.scale.set(4, 4, 4);
   }, [scene]);
 
   useFrame((state: any) => {
     if (group.current) {
-      // Continuous rotation + scroll influence
       group.current.rotation.y = state.clock.getElapsedTime() * 0.5 + scrollProgress * 2;
       group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.1 + scrollProgress * 0.5;
     }
@@ -40,7 +29,6 @@ function Model({ scrollProgress = 0 }: { scrollProgress: number }) {
     </group>
   );
 }
-
 
 function Loader() {
   const { progress } = useProgress();
@@ -55,19 +43,27 @@ function Loader() {
 
 useGLTF.preload('/models3d/hampi_test.glb');
 
-
-
+const HERO_VIDEOS = [
+  "https://ik.imagekit.io/ji2lkjg53/203803-922187125_medium.mp4",
+  "https://ik.imagekit.io/ji2lkjg53/269310_medium.mp4",
+  "https://ik.imagekit.io/ji2lkjg53/35423-407130876_medium.mp4",
+  "https://ik.imagekit.io/ji2lkjg53/172590-847860517_small.mp4"
+];
 
 const Home: React.FC = () => {
   const [sliderPosition, setSliderPosition] = useState<number>(50);
   const [isSliderDragging, setIsSliderDragging] = useState<boolean>(false);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const modelSectionRef = useRef<HTMLElement>(null);
 
   const monumentSite = historicalSites[0];
 
-  // Before/After slider handler
+  const handleVideoEnd = () => {
+    setCurrentVideoIndex((prev) => (prev + 1) % HERO_VIDEOS.length);
+  };
+
   const handleSliderChange = (e: React.MouseEvent | MouseEvent) => {
     if (sliderRef.current) {
       const rect = sliderRef.current.getBoundingClientRect();
@@ -80,6 +76,18 @@ const Home: React.FC = () => {
 
   const handleMouseDown = () => setIsSliderDragging(true);
   const handleMouseUp = () => setIsSliderDragging(false);
+
+  useEffect(() => {
+    const videoElements = document.querySelectorAll('video');
+    videoElements.forEach((video, index) => {
+      if (index === currentVideoIndex) {
+        video.currentTime = 0;
+        video.play().catch(() => { });
+      } else {
+        video.pause();
+      }
+    });
+  }, [currentVideoIndex]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -99,7 +107,6 @@ const Home: React.FC = () => {
     };
   }, [isSliderDragging]);
 
-  // Scroll-based 3D model animation
   useEffect(() => {
     const handleScroll = () => {
       if (modelSectionRef.current) {
@@ -108,8 +115,6 @@ const Home: React.FC = () => {
         const sectionTop = rect.top;
         const sectionHeight = rect.height;
 
-        // Calculate progress based on scroll position
-        // Model starts appearing when section is in view
         if (sectionTop < windowHeight && sectionTop > -sectionHeight) {
           const progress = Math.max(0, Math.min(1, 1 - (sectionTop / windowHeight)));
           setScrollProgress(progress);
@@ -118,171 +123,59 @@ const Home: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
-
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <div className="min-h-screen bg-[#111111] text-white overflow-hidden selection:bg-white selection:text-black">
-      {/* --- HERO SECTION --- (TimeLeap Context) */}
-      <section className="relative min-h-[95vh] flex flex-col justify-center px-6 pt-32 pb-16">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-10 animate-fade-in-up">
-              <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2">
-                <span className="text-sm font-medium text-[#BBBBBB]">#1 in Digital Heritage Visualization</span>
-              </div>
-
-              <h1
-                className="font-medium tracking-tight text-white"
-                style={{
-                  fontFamily: "'Manrope', sans-serif",
-                  fontSize: '68px',
-                  lineHeight: '82px',
-                  fontWeight: 500
-                }}
-              >
-                Seeing History <br />
-                Through Time
-              </h1>
-
-              <p
-                className="max-w-lg font-normal"
-                style={{
-                  fontFamily: "'Manrope', sans-serif",
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '20px',
-                  lineHeight: '32px',
-                  fontWeight: 400
-                }}
-              >
-                Visualize how historical places have changed over time. Explore interactive 3D reconstructions and experience the past.
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link to="/explore">
-                  <Button
-                    className="bg-white text-black hover:bg-[#EEEEEE] px-10 py-7 rounded-full transition-transform hover:scale-105"
-                    style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '17px',
-                      lineHeight: '26px',
-                      fontWeight: 500
-                    }}
-                  >
-                    Start Exploring
-                  </Button>
-                </Link>
-                <Link to="/upload">
-                  <Button
-                    variant="outline"
-                    className="bg-[#222222] border-[#333333] text-white hover:bg-[#333333] px-10 py-7 rounded-full transition-transform hover:scale-105"
-                    style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      fontSize: '17px',
-                      lineHeight: '26px',
-                      fontWeight: 500
-                    }}
-                  >
-                    Upload Image
-                  </Button>
-                </Link>
-              </div>
-
-            </div>
-
-            {/* Right Visual (Arched Image & Badges) */}
-            <div className="relative animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <div className="relative aspect-[4/5] w-full max-w-2xl mx-auto rounded-t-full overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-                <img
-                  src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1200&auto=format&fit=crop"
-                  alt="Hampi Ruins"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
-              </div>
-
-              {/* Floating Status Badges */}
-              <div className="absolute top-20 right-0 translate-x-12 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-[#D4AF37]"></div>
-                <span className="text-sm font-medium text-white/90">3D Exploration</span>
-              </div>
-
-              <div className="absolute top-1/2 -right-16 translate-y-8 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-[#00BFA6]"></div>
-                <span className="text-sm font-medium text-white/90">Past vs Present</span>
-              </div>
-
-              <div className="absolute bottom-32 -left-16 bg-black/40 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/10 shadow-xl flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full bg-white/40"></div>
-                <span className="text-sm font-medium text-white/90">Historical Accuracy</span>
-              </div>
-
-              {/* Rating Card */}
-              <div className="absolute bottom-8 right-0 -translate-x-8 bg-[#1A1A1A]/80 backdrop-blur-2xl p-6 rounded-[2rem] border border-white/5 shadow-2xl space-y-4 min-w-[220px]">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <Avatar key={i} className="h-10 w-10 border-2 border-[#1A1A1A]">
-                      <AvatarImage src={`https://i.pravatar.cc/100?u=${i + 40}`} />
-                      <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
-                  ))}
-                </div>
-                <div className="space-y-1">
-                  <div className="flex space-x-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <svg key={s} className="h-4 w-4 text-[#D4AF37] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.286 3.97c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.539-1.118l1.286-3.97a1 1 0 00-.364-1.118L2.245 9.397c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.97z" /></svg>
-                    ))}
-                  </div>
-                  <p className="text-sm font-bold text-white leading-tight mt-2">
-                    Loved by <br /> 5k+ Historians
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- INFINITE SCROLL GALLERY --- */}
-      <section className="py-12 bg-black overflow-hidden select-none">
-        <div className="flex animate-marquee">
-          {[...Array(4)].map((_, listIndex) => (
-            <div key={listIndex} className="flex gap-8 items-end pr-8">
-              {[
-                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Colosseum
-                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=800&q=80", // Petra
-                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?q=80&w=1170&auto=format&fit=crop", // Machu Picchu
-                "https://images.unsplash.com/photo-1470075446540-4391a96ec621?q=80&w=1074&auto=format&fit=crop", // Golconda Fort
-                "https://images.unsplash.com/photo-1723871568897-d0680195f20a?q=80&w=735&auto=format&fit=crop", // Konark Sun Temple
-                "https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop", // Hampi Ruins
-              ].map((src, i) => (
-                <div
-                  key={i}
-                  className={`relative flex-shrink-0 transition-transform hover:scale-[1.02] duration-500 cursor-pointer
-                    ${i % 2 === 0
-                      ? "w-[450px] aspect-[16/10] rounded-[3rem]"
-                      : "w-[300px] aspect-[3/4] rounded-t-full"} 
-                    overflow-hidden border border-white/5 shadow-2xl`}
-                >
-                  <img src={src} alt="Historical site" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
-                </div>
-              ))}
-            </div>
+      {/* --- HERO SECTION --- */}
+      <section className="relative min-h-[95vh] flex flex-col justify-center px-6 pt-32 pb-16 overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-black">
+          {HERO_VIDEOS.map((src, index) => (
+            <video
+              key={src}
+              autoPlay={index === 0}
+              muted
+              playsInline
+              onEnded={handleVideoEnd}
+              onCanPlay={(e) => {
+                if (index === currentVideoIndex) {
+                  e.currentTarget.play().catch(() => { });
+                }
+              }}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentVideoIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+            >
+              <source src={src} type="video/mp4" />
+            </video>
           ))}
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#111111] to-transparent z-[1]"></div>
+        <div className="max-w-7xl mx-auto w-full relative z-[2] flex flex-col items-center justify-center min-h-[60vh]">
+          <div className="animate-fade-in-up text-center">
+            <h1 className="text-5xl md:text-8xl font-bold mb-8 text-white tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+              TimeLeap
+            </h1>
+            <Link to="/upload">
+              <Button
+                variant="outline"
+                className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20 px-12 py-8 rounded-full transition-all hover:scale-105 font-bold text-lg"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Upload Historical Image
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* --- WHO WE ARE / STATS SECTION --- */}
       <section className="py-32 bg-[#111111] px-6">
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          {/* Arched Thumbnail */}
           <div className="mb-8 w-16 h-20 rounded-t-full overflow-hidden border border-white/10 shadow-xl">
             <img
-              src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop" // Hampi (Verified)
+              src="https://images.unsplash.com/photo-1596018382916-56d2e341d784?q=80&w=1548&auto=format&fit=crop"
               alt="Ancient Temple"
               className="w-full h-full object-cover"
             />
@@ -299,7 +192,6 @@ const Home: React.FC = () => {
             We’re a team of historians, digital artists, and developers bringing the past to life. From broken ruins to complete cities, we deliver academically accurate reconstructions.
           </h2>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 w-full pt-12">
             {[
               { value: "50+", label: "Civilizations Archived" },
@@ -329,9 +221,7 @@ const Home: React.FC = () => {
       {/* --- DESIGN INTENTION SECTION --- */}
       <section className="pb-32 px-6 bg-[#111111]">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 h-full">
-          {/* Left Content Card */}
           <div className="bg-[#1A1A1A] rounded-[3rem] p-12 md:p-20 relative overflow-hidden flex flex-col justify-between border border-white/5">
-            {/* Ghosted Background Text */}
             <div
               className="absolute bottom-[-10%] left-[-5%] text-[12rem] font-bold text-white/[0.02] select-none pointer-events-none whitespace-nowrap"
               style={{ fontFamily: "'Manrope', sans-serif" }}
@@ -361,12 +251,11 @@ const Home: React.FC = () => {
               </ul>
             </div>
 
-            {/* Arched Mini-Thumbnails */}
             <div className="relative z-10 flex space-x-4 mt-20">
               {[
-                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=80", // Colosseum (Verified)
-                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=200&q=80", // Petra (Verified)
-                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?w=200&q=80"  // Machu Picchu (Verified)
+                "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=80",
+                "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=200&q=80",
+                "https://images.unsplash.com/photo-1666240073343-9801b7b5b949?w=200&q=80"
               ].map((src, i) => (
                 <div key={i} className="w-16 h-24 rounded-t-full overflow-hidden border border-white/10 shadow-lg transform translate-y-4 hover:translate-y-0 transition-transform duration-500">
                   <img src={src} alt="Architecture detail" className="w-full h-full object-cover" />
@@ -375,7 +264,6 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Image Container */}
           <div className="rounded-[3rem] overflow-hidden h-[600px] lg:h-auto border border-white/5 shadow-2xl">
             <img
               src="https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=1200&q=80"
@@ -383,13 +271,12 @@ const Home: React.FC = () => {
               className="w-full h-full object-cover"
             />
           </div>
-        </div >
-      </section >
+        </div>
+      </section>
 
       {/* --- OUR SERVICES SECTION --- */}
-      < section className="py-32 px-6 bg-[#111111]" >
+      <section className="py-32 px-6 bg-[#111111]" id="services">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="flex flex-col items-center text-center mb-20">
             <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
               <span className="text-sm font-medium text-[#BBBBBB]">Our services</span>
@@ -402,7 +289,6 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          {/* Service Grid */}
           <div className="grid md:grid-cols-2 gap-8">
             {[
               {
@@ -448,10 +334,8 @@ const Home: React.FC = () => {
             ].map((service, i) => (
               <div
                 key={i}
-                className="group bg-[#1A1A1A] rounded-[3rem] p-12 lg:p-16 border border-white/5 relative overflow-hidden flex flex-col items-start transition-all duration-500 hover:bg-[#1E1E1E] hover:-translate-y-2 hover:shadow-2xl animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.15}s` }}
+                className="group bg-[#1A1A1A] rounded-[3rem] p-12 lg:p-16 border border-white/5 relative overflow-hidden flex flex-col items-start transition-all duration-500 hover:bg-[#1E1E1E] hover:-translate-y-2 hover:shadow-2xl"
               >
-                {/* Floating Image Accent */}
                 {service.hasAccent && (
                   <div className="absolute top-12 -right-24 w-48 aspect-[3/4] rounded-t-full overflow-hidden border border-white/10 opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rotate-6">
                     <img src={service.accentImg} alt="" className="w-full h-full object-cover" />
@@ -478,17 +362,13 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
-      </section >
+      </section>
 
-      {/* --- FEATURED PROJECT SECTION (HAMPI) --- */}
-      < section
-        ref={modelSectionRef}
-        className="relative min-h-[140vh] flex items-center justify-center perspective-1000 py-32"
-      >
-        <div className="max-w-7xl mx-auto w-full px-4">
+      {/* --- FEATURED PROJECT SECTION --- */}
+      <section ref={modelSectionRef} className="relative min-h-[120vh] flex items-center justify-center py-32">
+        <div className="max-w-7xl mx-auto w-full px-6">
           <div className="grid lg:grid-cols-2 gap-24 items-center">
-            {/* 3D Model Visual */}
-            <div className="relative order-2 lg:order-1">
+            <div className="relative">
               <div className="relative aspect-square w-full max-w-2xl mx-auto">
                 <div className="absolute inset-0 bg-[#D4AF37]/5 rounded-full blur-[100px]"></div>
                 <div className="relative w-full h-full">
@@ -498,19 +378,12 @@ const Home: React.FC = () => {
                     <Suspense fallback={<Loader />}>
                       <Model scrollProgress={scrollProgress} />
                     </Suspense>
-                    <OrbitControls
-                      enableZoom={false}
-                      enablePan={false}
-                      autoRotate
-                      autoRotateSpeed={2}
-                    />
+                    <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={2} />
                   </Canvas>
                 </div>
-
-                {/* Floating Labels (Buildio Inspired) */}
-                <div className="absolute -top-10 -right-10 bg-muted/40 backdrop-blur-xl p-6 rounded-2xl border border-border/50 space-y-2 hidden md:block">
+                <div className="absolute -top-10 -right-10 bg-[#1A1A1A]/80 backdrop-blur-xl p-6 rounded-2xl border border-white/10 space-y-2 hidden md:block">
                   <div className="text-[#D4AF37] text-2xl font-bold">85%</div>
-                  <div className="text-xs font-semibold tracking-widest text-muted-foreground uppercase leading-tight">Reconstruction <br />Progress</div>
+                  <div className="text-xs font-semibold tracking-widest text-[#888888] uppercase leading-tight">Reconstruction <br />Progress</div>
                   <div className="w-24 h-1 bg-[#D4AF37]/30 rounded-full overflow-hidden">
                     <div className="h-full bg-[#D4AF37]" style={{ width: '85%' }}></div>
                   </div>
@@ -518,8 +391,7 @@ const Home: React.FC = () => {
               </div>
             </div>
 
-            {/* Project Content */}
-            <div className="space-y-10 order-1 lg:order-2">
+            <div className="space-y-10">
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 text-[#D4AF37]">
                   <Layers className="h-5 w-5" />
@@ -530,19 +402,19 @@ const Home: React.FC = () => {
                 </h2>
               </div>
 
-              <p className="text-xl text-muted-foreground leading-relaxed italic">
+              <p className="text-xl text-[#888888] leading-relaxed italic">
                 {monumentSite.description}
               </p>
 
-              <div className="grid grid-cols-2 gap-8 py-8 border-y border-border/50">
+              <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
                 <div className="space-y-1">
-                  <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center">
+                  <div className="text-sm font-bold text-[#888888] uppercase tracking-widest flex items-center">
                     <MapPin className="h-4 w-4 mr-2 text-[#D4AF37]" /> Location
                   </div>
                   <div className="text-xl font-semibold">{monumentSite.location}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest flex items-center">
+                  <div className="text-sm font-bold text-[#888888] uppercase tracking-widest flex items-center">
                     <Calendar className="h-4 w-4 mr-2 text-[#00BFA6]" /> Built
                   </div>
                   <div className="text-xl font-semibold">{monumentSite.yearBuilt}</div>
@@ -553,7 +425,7 @@ const Home: React.FC = () => {
                 <Link to={`/project/${monumentSite.id}`}>
                   <Button
                     size="lg"
-                    className="bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-background px-12 py-8 rounded-full text-xl font-bold transition-all"
+                    className="bg-transparent border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black px-12 py-8 rounded-full text-xl font-bold transition-all"
                   >
                     Explore in Full 3D
                   </Button>
@@ -562,69 +434,52 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* --- BEFORE/AFTER SLIDER SECTION --- */}
-      < section className="py-32 px-4" >
+      <section className="py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20 space-y-4">
             <h2 className="text-5xl md:text-6xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
               Before & After <span className="text-[#00BFA6]">Reconstruction.</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-xl mx-auto">
+            <p className="text-xl text-[#888888] max-w-xl mx-auto">
               Witness history come alive through digital restoration.
             </p>
           </div>
 
-          <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-[3rem] overflow-hidden border-2 border-border shadow-2xl">
+          <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-[3rem] overflow-hidden border-2 border-white/5 shadow-2xl">
             <div
               ref={sliderRef}
               className="relative w-full h-full cursor-ew-resize select-none"
               onMouseDown={handleMouseDown}
             >
-              {/* After Image */}
-              <img
-                src="/images/after.png"
-                alt="After reconstruction"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-
-              {/* Before Image with clip */}
+              <img src="/images/after.png" alt="After" className="absolute inset-0 w-full h-full object-cover" />
               <div
                 className="absolute inset-0 overflow-hidden"
                 style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
               >
-                <img
-                  src="/images/before.jpg"
-                  alt="Before reconstruction"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+                <img src="/images/before.jpg" alt="Before" className="absolute inset-0 w-full h-full object-cover" />
               </div>
-
-              {/* Slider Line */}
               <div
                 className="absolute top-0 bottom-0 w-px bg-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.8)]"
                 style={{ left: `${sliderPosition}%` }}
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-background border-2 border-[#D4AF37] rounded-full flex items-center justify-center shadow-2xl">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-black border-2 border-[#D4AF37] rounded-full flex items-center justify-center shadow-2xl">
                   <div className="flex space-x-0.5">
                     <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
                     <div className="w-0.5 h-4 bg-[#D4AF37] rounded-full"></div>
                   </div>
                 </div>
               </div>
-
-              <div className="absolute top-8 left-8 bg-black/40 backdrop-blur-xl px-6 py-2 rounded-full border border-white/20 text-sm font-bold tracking-widest uppercase">Before</div>
-              <div className="absolute top-8 right-8 bg-black/40 backdrop-blur-xl px-6 py-2 rounded-full border border-white/20 text-sm font-bold tracking-widest uppercase text-[#00BFA6]">After</div>
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* --- RECENT PROJECTS SHOWCASE --- */}
-      < section className="py-32 px-6 bg-[#111111]" >
+      <section className="py-32 px-6 bg-[#111111]" id="projects">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="flex flex-col items-center text-center mb-24">
             <div className="inline-flex items-center bg-[#222222] border border-[#333333] rounded-full px-4 py-2 mb-6">
               <span className="text-sm font-medium text-[#BBBBBB]">Recent work</span>
@@ -637,19 +492,10 @@ const Home: React.FC = () => {
             </p>
           </div>
 
-          {/* Vertical Projects Stack */}
           <div className="space-y-12">
-            {[
-              historicalSites[0], // Hampi
-              historicalSites[1], // Colosseum
-              historicalSites[2]  // Petra
-            ].map((project, i) => (
-              <div
-                key={i}
-                className="group bg-[#1A1A1A] rounded-[3.5rem] p-4 lg:p-8 border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E]"
-              >
+            {[historicalSites[0], historicalSites[1], historicalSites[2]].map((project, i) => (
+              <div key={i} className="group bg-[#1A1A1A] rounded-[3.5rem] p-4 lg:p-8 border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E]">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
-                  {/* Left Content */}
                   <div className="p-8 lg:p-12 space-y-8">
                     <h3 className="text-3xl md:text-4xl font-medium text-white leading-tight" style={{ fontFamily: "'Manrope', sans-serif" }}>
                       {project.name}
@@ -657,7 +503,6 @@ const Home: React.FC = () => {
                     <p className="text-[#888888] text-lg leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
                       {project.description}
                     </p>
-
                     <div className="flex flex-wrap gap-6 pt-4">
                       <div className="flex items-center space-x-2 text-white/70">
                         <Sparkles className="w-4 h-4 text-[#D4AF37]" />
@@ -668,26 +513,20 @@ const Home: React.FC = () => {
                         <span className="text-sm font-medium" style={{ fontFamily: "'Manrope', sans-serif" }}>{project.location}</span>
                       </div>
                     </div>
-
                     <div className="pt-6">
-                      <Button
-                        variant="outline"
-                        className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all"
-                      >
-                        View in detail
-                      </Button>
+                      <Link to={`/project/${project.id}`}>
+                        <Button
+                          variant="outline"
+                          className="bg-[#222222] border-[#333333] text-[#BBBBBB] hover:text-white hover:bg-[#333333] rounded-full px-8 py-4 text-sm font-bold transition-all"
+                        >
+                          View in detail
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-
-                  {/* Right Image (Arched) */}
                   <div className="aspect-[16/11] lg:aspect-auto h-full min-h-[400px] rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl relative">
-                    {/* Arched Clipping Mask (CSS approach) */}
                     <div className="absolute inset-0 overflow-hidden rounded-t-[10rem] md:rounded-t-[15rem]">
-                      <img
-                        src={project.thumbnail}
-                        alt={project.name}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                      />
+                      <img src={project.thumbnail} alt={project.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                     </div>
                   </div>
                 </div>
@@ -695,10 +534,10 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
-      </section >
+      </section>
 
       {/* --- TESTIMONIALS SECTION --- */}
-      < section className="py-32 px-4" >
+      <section className="py-32 px-6" id="testimonials">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-4xl md:text-5xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -751,20 +590,17 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
-      </section >
+      </section>
 
-      {/* --- FINAL CTA SECTION (MATCHING REFERENCE) --- */}
-      < section className="py-24 px-6 bg-[#111111]" >
+      {/* --- FINAL CTA SECTION --- */}
+      <section className="py-24 px-6 bg-[#111111]">
         <div className="max-w-7xl mx-auto">
           <div className="relative h-[650px] rounded-[3.5rem] overflow-hidden flex items-center justify-center border border-white/5 shadow-3xl">
-            {/* Background Image */}
             <img
               src="https://images.unsplash.com/photo-1666240073343-9801b7b5b949?q=80&w=1600&auto=format&fit=crop"
               alt="Historical Atmosphere"
               className="absolute inset-0 w-full h-full object-cover grayscale-[0.2]"
             />
-
-            {/* Transparent Dark Overlay Card */}
             <div className="relative z-10 w-full max-w-4xl bg-black/40 backdrop-blur-2xl rounded-[3rem] p-12 md:p-20 flex flex-col items-center text-center border border-white/10 shadow-2xl mx-8">
               <h2
                 className="text-4xl md:text-7xl font-bold text-white mb-8 leading-[1.1]"
@@ -778,7 +614,6 @@ const Home: React.FC = () => {
               >
                 Join thousands of history enthusiasts and start your journey through time today.
               </p>
-
               <Button
                 size="lg"
                 className="bg-white text-black hover:bg-white/90 px-12 py-8 text-xl rounded-full transition-transform hover:scale-105 font-bold shadow-xl"
@@ -789,8 +624,8 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
-    </div >
+      </section>
+    </div>
   );
 };
 

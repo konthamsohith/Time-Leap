@@ -8,6 +8,7 @@ interface GLBModelProps {
 }
 
 function GLBModel({ modelPath, scale }: GLBModelProps) {
+  if (!modelPath) return null;
   const { scene } = useGLTF(modelPath) as any;
   return <primitive object={scene} scale={scale} />
 }
