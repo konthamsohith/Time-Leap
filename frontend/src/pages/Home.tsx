@@ -16,14 +16,6 @@ function WhyChooseSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -140]);
 
   // Scroll-triggered animation
   useEffect(() => {
@@ -137,77 +129,72 @@ function WhyChooseSection() {
 
         {/* Benefits Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {benefits.map((benefit, index) => {
-            const y = [y1, y2, y3][index % 3];
-            return (
-              <motion.div
-                key={index}
-                className={`group relative bg-gradient-to-br from-[#111111] to-[#0a0a0a] rounded-2xl p-8 border border-white/5 
-                  transition-all duration-700 ease-out cursor-pointer
-                  hover:scale-[1.02]
-                  ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="group relative bg-gradient-to-br from-[#111111] to-[#0a0a0a] rounded-2xl p-8 border border-white/5 
+                transition-all duration-700 ease-out cursor-pointer
+                hover:scale-[1.02]"
+            >
+              {/* Animated Glow Border */}
+              <div
+                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{
-                  y,
-                  transitionDelay: isVisible ? `${index * 100}ms` : '0ms',
-                  perspective: '1000px'
+                  background: 'linear-gradient(45deg, transparent, #D4AF37, transparent)',
+                  backgroundSize: '200% 200%',
+                  animation: 'glowBorder 2s linear infinite',
+                  padding: '1px',
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
                 }}
-              >
-                {/* Animated Glow Border */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background: 'linear-gradient(45deg, transparent, #D4AF37, transparent)',
-                    backgroundSize: '200% 200%',
-                    animation: 'glowBorder 2s linear infinite',
-                    padding: '1px',
-                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                    WebkitMaskComposite: 'xor',
-                    maskComposite: 'exclude',
-                  }}
-                />
+              />
 
-                {/* Glow Effect on Hover */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37]/0 via-[#D4AF37]/20 to-[#D4AF37]/0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+              {/* Glow Effect on Hover */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37]/0 via-[#D4AF37]/20 to-[#D4AF37]/0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
 
-                {/* Icon with Advanced Animation */}
-                <div
-                  className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4AF37]/20 to-[#D4AF37]/5 flex items-center justify-center text-[#D4AF37] mb-6 
+              {/* Icon with Advanced Animation */}
+              <div
+                className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4AF37]/20 to-[#D4AF37]/5 flex items-center justify-center text-[#D4AF37] mb-6 
                   transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-lg group-hover:shadow-[#D4AF37]/30"
-                >
-                  {/* Pulsing Ring */}
-                  <div className="absolute inset-0 rounded-2xl border-2 border-[#D4AF37]/30 opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
-                  <div className="relative z-10 group-hover:animate-bounce">
-                    {benefit.icon}
-                  </div>
+              >
+                {/* Pulsing Ring */}
+                <div className="absolute inset-0 rounded-2xl border-2 border-[#D4AF37]/30 opacity-0 group-hover:opacity-100 group-hover:animate-ping" />
+                <div className="relative z-10 group-hover:animate-bounce">
+                  {benefit.icon}
                 </div>
+              </div>
 
-                {/* Title with Underline Animation */}
-                <h3
-                  className="relative text-xl font-bold text-white mb-3 group-hover:text-[#D4AF37] transition-colors duration-300"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {benefit.title}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-500" />
-                </h3>
+              {/* Title with Underline Animation */}
+              <h3
+                className="relative text-xl font-bold text-white mb-3 group-hover:text-[#D4AF37] transition-colors duration-300"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                {benefit.title}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-500" />
+              </h3>
 
-                {/* Description with Fade */}
-                <p
-                  className="text-[#888888] text-sm leading-relaxed group-hover:text-[#bbb] transition-colors duration-500"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {benefit.description}
-                </p>
+              {/* Description with Fade */}
+              <p
+                className="text-[#888888] text-sm leading-relaxed group-hover:text-[#bbb] transition-colors duration-500"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                {benefit.description}
+              </p>
 
-                {/* Floating Number */}
-                <div
-                  className="absolute top-4 right-4 text-6xl font-black text-white/[0.03] group-hover:text-[#D4AF37]/10 transition-colors duration-500"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  0{index + 1}
-                </div>
-              </motion.div>
-            );
-          })}
+              {/* Floating Number */}
+              <div
+                className="absolute top-4 right-4 text-6xl font-black text-white/[0.03] group-hover:text-[#D4AF37]/10 transition-colors duration-500"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                0{index + 1}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -384,7 +371,7 @@ function ProcessFeaturesSection() {
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/10 -translate-y-1/2" />
             <div
               className="absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#D4AF37]/50 -translate-y-1/2 transition-all duration-500"
-              style={{ width: `${(activeFeature / (FEATURES_DATA.length-1)) * 100}% ` }}
+              style={{ width: `${(activeFeature / (FEATURES_DATA.length - 1)) * 100}% ` }}
             />
 
             {/* Step Indicators */}
@@ -493,7 +480,7 @@ function ProcessFeaturesSection() {
               {/* Navigation Arrows */}
               <div className="flex gap-4">
                 <button
-                  onClick={() => setActiveFeature(prev => prev === 0 ? FEATURES_DATA.length-1 : prev-1)}
+                  onClick={() => setActiveFeature(prev => prev === 0 ? FEATURES_DATA.length - 1 : prev - 1)}
                   className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -529,27 +516,6 @@ const HERO_VIDEOS = [
 
 const Home: React.FC = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const heroRef = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "150%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  // Projects Parallax
-  const projectsRef = useRef<HTMLElement>(null);
-  const { scrollYProgress: projectsScroll } = useScroll({
-    target: projectsRef,
-    offset: ["start end", "end start"]
-  });
-
-  const py1 = useTransform(projectsScroll, [0, 1], [0, -80]);
-  const py2 = useTransform(projectsScroll, [0, 1], [0, -40]);
-  const py3 = useTransform(projectsScroll, [0, 1], [0, -120]);
 
   const handleVideoEnd = () => {
     setCurrentVideoIndex((prev) => (prev + 1) % HERO_VIDEOS.length);
@@ -571,9 +537,9 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#111111] text-white overflow-hidden selection:bg-white selection:text-black">
       {/* --- HERO SECTION --- */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Video Background */}
-        <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 bg-black">
+        <div className="absolute inset-0 z-0 bg-black">
           {HERO_VIDEOS.map((src, index) => (
             <video
               key={src}
@@ -592,7 +558,7 @@ const Home: React.FC = () => {
               <source src={src} type="video/mp4" />
             </video>
           ))}
-        </motion.div>
+        </div>
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 z-[1] bg-black/40"></div>
@@ -618,7 +584,10 @@ const Home: React.FC = () => {
 
         {/* Content */}
         <motion.div
-          style={{ y: textY, opacity }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="max-w-7xl mx-auto w-full relative z-[4] px-6 md:px-12 lg:px-16 pt-24"
         >
           <div className="max-w-3xl">
@@ -692,7 +661,7 @@ const Home: React.FC = () => {
 
 
       {/* --- RECENT PROJECTS SHOWCASE --- */}
-      <section ref={projectsRef} className="pt-24 pb-32 bg-[#0a0a0a] px-6 lg:px-20" id="projects">
+      <section className="pt-24 pb-32 bg-[#0a0a0a] px-6 lg:px-20" id="projects">
         <div className="max-w-[1400px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -724,48 +693,44 @@ const Home: React.FC = () => {
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {historicalSites.slice(0, 3).map((site, index) => {
-              const y = [py1, py2, py3][index % 3];
-              return (
-                <motion.div
-                  key={site.id}
-                  style={{ y }}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                >
-                  <Link to={`/ project / ${site.id} `} className="group relative block aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 bg-[#111111]">
-                    <img
-                      src={site.thumbnail}
-                      alt={site.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+            {historicalSites.slice(0, 3).map((site, index) => (
+              <motion.div
+                key={site.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+              >
+                <Link to={`/project/${site.id}`} className="group relative block aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/5 bg-[#111111]">
+                  <img
+                    src={site.thumbnail}
+                    alt={site.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
 
-                    <div className="absolute inset-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <div className="flex items-center gap-2 text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-3">
-                        <MapPin className="w-4 h-4" />
-                        {site.location}
-                      </div>
-                      <h3 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                        {site.name}
-                      </h3>
-                      <p className="text-white/60 text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                        {site.description}
-                      </p>
-
-                      <div className="mt-6 flex items-center text-white text-sm font-bold group-hover:text-[#D4AF37] transition-colors">
-                        Explore Project
-                        <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </div>
+                  <div className="absolute inset-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="flex items-center gap-2 text-[#D4AF37] text-sm font-bold tracking-widest uppercase mb-3">
+                      <MapPin className="w-4 h-4" />
+                      {site.location}
                     </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
+                    <h3 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                      {site.name}
+                    </h3>
+                    <p className="text-white/60 text-sm line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                      {site.description}
+                    </p>
+
+                    <div className="mt-6 flex items-center text-white text-sm font-bold group-hover:text-[#D4AF37] transition-colors">
+                      Explore Project
+                      <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
