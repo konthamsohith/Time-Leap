@@ -13,12 +13,15 @@ import Upload from "./pages/Upload";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Lenis from "@studio-freight/lenis";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import ScrollToTop from "./components/ScrollToTop";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
   const showCTA = !['/about', '/explore'].includes(location.pathname) && location.hash !== '#testimonials' && !location.pathname.startsWith('/project/');
+  const lenisRef = useRef<Lenis | null>(null);
 
+  // Initialize Lenis once
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -30,6 +33,8 @@ const AppContent: React.FC = () => {
       touchMultiplier: 2,
     });
 
+    lenisRef.current = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -39,11 +44,20 @@ const AppContent: React.FC = () => {
 
     return () => {
       lenis.destroy();
+      lenisRef.current = null;
     };
   }, []);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    }
+  }, [location.pathname]);
+
   return (
     <div className="App min-h-screen flex flex-col">
+      <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <Routes>
