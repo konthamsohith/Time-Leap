@@ -40,7 +40,7 @@ const Explore: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-20">
-          <div className="inline-flex items-center bg-[#222222] border border-white/10 rounded-full px-4 py-2 mb-6">
+          <div className="inline-flex items-center bg-[#222222] border border-white/10 rounded-2xl px-4 py-2 mb-6">
             <span className="text-sm font-medium text-[#BBBBBB]">Site collection</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -52,7 +52,7 @@ const Explore: React.FC = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-[#1A1A1A] p-8 rounded-[3rem] border border-white/5 mb-12 shadow-2xl">
+        <div className="bg-[#1A1A1A] p-8 rounded-2xl border border-white/5 mb-12 shadow-2xl">
           <div className="grid md:grid-cols-4 gap-6">
             {/* Search */}
             <div className="md:col-span-2 relative">
@@ -62,7 +62,7 @@ const Explore: React.FC = () => {
                 placeholder="Search sites or locations..."
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                className="pl-12 bg-[#111111] border-white/10 text-white rounded-full py-6 focus:border-[#D4AF37] focus:ring-0 transition-all"
+                className="pl-12 bg-[#111111] border-white/10 text-white rounded-2xl py-6 focus:border-[#D4AF37] focus:ring-0 transition-all"
               />
             </div>
 
@@ -139,7 +139,7 @@ const Explore: React.FC = () => {
                 to={`/project/${site.id}`}
                 className="group"
               >
-                <div className="bg-[#1A1A1A] rounded-[3rem] border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E] hover:border-white/10 shadow-xl h-full flex flex-col">
+                <div className="bg-[#1A1A1A] rounded-2xl border border-white/5 overflow-hidden transition-all hover:bg-[#1E1E1E] hover:border-white/10 shadow-xl h-full flex flex-col">
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img
                       src={site.thumbnail}

@@ -90,27 +90,43 @@ export const historicalSites: HistoricalSite[] = [
       { year: 80, status: "Grand Inauguration", progress: 100 },
       { year: 1349, status: "Seismic Alteration", progress: 55 },
       { year: 2024, status: "Digital Heritage Scan", progress: 88 }
-    ]
+    ],
+    models: {
+      before: "/models3d/colosseum+3d+model.glb",
+      after: "/models3d/colosseum+3d+model.glb",
+      scales: {
+        before: 2.5,
+        after: 2.5
+      }
+    }
   },
   {
     id: 3,
-    name: "Petra City",
-    location: "Ma'an, Jordan",
-    era: "4th Century BC",
-    architectureType: "Rock-cut Restoration",
-    region: "Middle East",
-    description: "Rediscover the 'Rose City' in its prime as the Nabataean capital. Explore the vibrant colors and complete carvings of the Treasury and Monastery that have been softened by centuries of desert winds.",
-    thumbnail: "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=800&q=80",
-    beforeImage: "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=1200&q=80",
-    afterImage: "https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=1200&q=80",
-    materials: ["Rose Sandstone", "Limestone"],
-    yearBuilt: "4th Century BC",
-    yearDestroyed: "Abandoned 7th Century AD",
+    name: "Corfe Castle",
+    location: "Dorset, England",
+    era: "11th Century AD",
+    architectureType: "Medieval Norman Fortress",
+    region: "United Kingdom",
+    description: "Step into the dramatic past of Corfe Castle, once a formidable royal stronghold guarding the Purbeck Hills. Witness towering stone walls, defensive gates, and the scars left by the English Civil War that transformed it into the iconic ruin seen today.",
+    thumbnail: "https://images.unsplash.com/photo-1650915427961-7e678648a486?q=80&w=1184&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    beforeImage: "https://images.unsplash.com/photo-1650915427961-7e678648a486?q=80&w=1184&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    afterImage: "https://images.unsplash.com/photo-1650915427961-7e678648a486?q=80&w=1184&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    materials: ["Limestone", "Chalk"],
+    yearBuilt: "1086 AD",
+    yearDestroyed: "Slighted in 1646 (English Civil War)",
     restorationStages: [
-      { year: -312, status: "Establishment", progress: 100 },
-      { year: 363, status: "Earthquake Impact", progress: 60 },
-      { year: 2024, status: "3D Visual Archive", progress: 92 }
-    ]
+      { year: 1086, status: "Norman Construction", progress: 100 },
+      { year: 1646, status: "Civil War Demolition", progress: 35 },
+      { year: 2024, status: "Digital Preservation", progress: 80 }
+    ],
+    models: {
+      before: "/models3d/model_before_corfe.glb",
+      after: "/models3d/model_before_corfe.glb",
+      scales: {
+        before: 2.5,
+        after: 2.5
+      }
+    }
   },
   {
     id: 4,
