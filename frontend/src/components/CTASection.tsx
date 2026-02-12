@@ -65,7 +65,7 @@ export function CTASection() {
                 style={{ willChange: 'transform, opacity' }}
             >
                 <img
-                    src="/images/cta_bg.png"
+                    src="/images/archive_scene.jpg"
                     alt="Dramatic ruins"
                     className="w-full h-full object-cover"
                 />
