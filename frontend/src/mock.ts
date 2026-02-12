@@ -64,8 +64,8 @@ export const historicalSites: HistoricalSite[] = [
       { year: 2024, status: "3D Digital Preserve", progress: 85 }
     ],
     models: {
-      before: "/models3d/model_before_hampi.glb",
-      after: "/models3d/model_after_hampi.glb",
+      before: "/models3d/hampi_before.glb",
+      after: "/models3d/hampi_after.glb",
       scales: {
         before: 2.5,
         after: 2.5
@@ -92,8 +92,8 @@ export const historicalSites: HistoricalSite[] = [
       { year: 2024, status: "Digital Heritage Scan", progress: 88 }
     ],
     models: {
-      before: "/models3d/colosseum+3d+model.glb",
-      after: "/models3d/colosseum+3d+model.glb",
+      before: "/models3d/colosseum_before.glb",
+      after: "/models3d/colosseum_before.glb",
       scales: {
         before: 2.5,
         after: 2.5
@@ -120,8 +120,8 @@ export const historicalSites: HistoricalSite[] = [
       { year: 2024, status: "Digital Preservation", progress: 80 }
     ],
     models: {
-      before: "/models3d/model_before_corfe.glb",
-      after: "/models3d/model_before_corfe.glb",
+      before: "/models3d/corfe_before.glb",
+      after: "/models3d/corfe_before.glb",
       scales: {
         before: 2.5,
         after: 2.5
