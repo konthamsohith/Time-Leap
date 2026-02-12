@@ -44,7 +44,7 @@ const ProjectDetail: React.FC = () => {
               Back
             </Button>
           </Link>
-          
+
           <div className="flex-1 text-center">
             <h1 className="text-lg font-bold text-white">{site.name}</h1>
           </div>
@@ -62,10 +62,10 @@ const ProjectDetail: React.FC = () => {
       </nav>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 pt-20">
+      <div className="flex flex-1 pt-16">
         {/* Left Sidebar - Operations */}
-        <div className="w-80 bg-[#0D0D0D] border-r border-white/5 p-6 overflow-y-auto">
-          <div className="space-y-6">
+        <div className="w-64 bg-[#0D0D0D] border-r border-white/5 p-4 overflow-y-auto">
+          <div className="space-y-4">
             {/* Project Info */}
             <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
               <div className="space-y-3">
@@ -119,42 +119,25 @@ const ProjectDetail: React.FC = () => {
               </button>
             </div>
 
-            {/* Timeline Progress */}
-            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-white">Restoration Progress</h3>
-                <span className="text-xs font-bold text-[#D4AF37]">{timelineProgress}%</span>
-              </div>
-              <Slider
-                value={[timelineProgress]}
-                onValueChange={(value) => setTimelineProgress(value[0])}
-                min={0}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-              <p className="text-xs text-[#888888] mt-3">{site.restorationStages.length} stages</p>
-            </div>
+
 
             {/* View Mode Toggle */}
             <div className="bg-[#1A1A1A] p-3 rounded-2xl border border-white/10 flex">
               <button
                 onClick={() => setViewMode('before')}
-                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === 'before'
-                    ? 'bg-white text-black'
-                    : 'text-[#888888] hover:text-white'
-                }`}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'before'
+                  ? 'bg-white text-black'
+                  : 'text-[#888888] hover:text-white'
+                  }`}
               >
                 Before
               </button>
               <button
                 onClick={() => setViewMode('after')}
-                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                  viewMode === 'after'
-                    ? 'bg-white text-black'
-                    : 'text-[#888888] hover:text-white'
-                }`}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${viewMode === 'after'
+                  ? 'bg-white text-black'
+                  : 'text-[#888888] hover:text-white'
+                  }`}
               >
                 After
               </button>
@@ -169,8 +152,8 @@ const ProjectDetail: React.FC = () => {
         </div>
 
         {/* Center - 3D Viewport */}
-        <div className="flex-1 bg-[#0F0F0F] relative p-6">
-          <div className="w-full h-full bg-[#111111] rounded-3xl border border-white/5 overflow-hidden flex items-center justify-center relative shadow-2xl">
+        <div className="flex-1 relative p-12">
+          <div className="w-full h-[550px] bg-[#111111] rounded-3xl border border-white/5 overflow-hidden flex items-center justify-center relative shadow-2xl">
             <div className="absolute inset-0 z-0">
               <MonumentModel
                 modelPath={viewMode === 'before' ? site.models?.before || '' : site.models?.after || ''}
@@ -190,18 +173,9 @@ const ProjectDetail: React.FC = () => {
         </div>
 
         {/* Right Sidebar - Details & Assets */}
-        <div className="w-80 bg-[#0D0D0D] border-l border-white/5 p-6 overflow-y-auto">
-          <div className="space-y-6">
-            {/* Assets Panel */}
-            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
-              <h3 className="text-sm font-bold text-white mb-4">Assets</h3>
-              <p className="text-xs text-[#888888] mb-4">3D Model v{Math.floor(Math.random() * 10) + 1}.0</p>
-              <div className="bg-[#111111] p-4 rounded-2xl border border-white/10 text-center">
-                <Box className="h-8 w-8 text-[#D4AF37] mx-auto mb-2" />
-                <p className="text-xs font-bold text-white mb-1">Main Model</p>
-                <p className="text-xs text-[#888888]">{site.name}.glb</p>
-              </div>
-            </div>
+        <div className="w-64 bg-[#0D0D0D] border-l border-white/5 p-4 overflow-y-auto">
+          <div className="space-y-4">
+
 
             {/* Site Details */}
             <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
@@ -243,16 +217,7 @@ const ProjectDetail: React.FC = () => {
               </Tabs>
             </div>
 
-            {/* Accuracy Badge */}
-            <div className="bg-gradient-to-br from-[#1A1A1A] to-[#222222] p-6 rounded-3xl border border-[#D4AF37]/20">
-              <div className="space-y-3">
-                <p className="text-xs font-bold text-[#888888] uppercase tracking-widest">Accuracy Score</p>
-                <div className="text-3xl font-bold text-[#D4AF37]">
-                  {site.restorationStages[site.restorationStages.length - 1].progress}%
-                </div>
-                <p className="text-xs text-[#888888]">Data-driven restoration</p>
-              </div>
-            </div>
+
 
             {/* Restoration Stages */}
             <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
@@ -262,11 +227,10 @@ const ProjectDetail: React.FC = () => {
                   <button
                     key={idx}
                     onClick={() => setTimelineProgress(stage.progress)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all flex items-center gap-2 ${
-                      timelineProgress >= stage.progress
-                        ? 'bg-[#222222] border border-[#D4AF37]/30 text-white'
-                        : 'border border-white/5 text-[#888888] hover:text-white hover:border-white/10'
-                    }`}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all flex items-center gap-2 ${timelineProgress >= stage.progress
+                      ? 'bg-[#222222] border border-[#D4AF37]/30 text-white'
+                      : 'border border-white/5 text-[#888888] hover:text-white hover:border-white/10'
+                      }`}
                   >
                     <div className={`w-2 h-2 rounded-full ${timelineProgress >= stage.progress ? 'bg-[#D4AF37]' : 'bg-[#333333]'}`}></div>
                     <div>

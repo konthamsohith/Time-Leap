@@ -19,6 +19,8 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const showCTA = !['/about', '/explore', '/upload', '/contact'].includes(location.pathname) && location.hash !== '#testimonials' && !location.pathname.startsWith('/project/');
 
+  const showNavbar = !location.pathname.startsWith('/project/');
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -44,7 +46,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="App min-h-screen flex flex-col">
-      <Navbar />
+      {showNavbar && <Navbar />}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
