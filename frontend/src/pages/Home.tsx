@@ -508,7 +508,7 @@ function ProcessFeaturesSection() {
 
 
 const HERO_VIDEOS = [
-  '/videos/herosection.mp4',
+  '/videos/colosseum.mp4',
 ];
 
 const Home: React.FC = () => {
