@@ -57,13 +57,13 @@ const Contact: React.FC = () => {
     {
       icon: Phone,
       title: "Phone",
-      content: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
+      content: "+91 1234567890",
+      link: "tel:+91 1234567890"
     },
     {
       icon: MapPin,
       title: "Address",
-      content: "123 History Lane, Heritage City, HC 12345",
+      content: "SNIST, Yamnampet, Hyderabad, Telangana 501301",
       link: null
     }
   ];
@@ -189,19 +189,6 @@ const Contact: React.FC = () => {
                   <Send className="ml-3 h-5 w-5" />
                 </Button>
               </form>
-            </div>
-          </div>
-        </div>
-
-        {/* Map Placeholder */}
-        <div className="mt-16 h-96 rounded-[3.5rem] overflow-hidden border border-white/5 relative bg-[#1A1A1A] group">
-          <div className="absolute inset-0 bg-[#111111] flex items-center justify-center">
-            <div className="text-center group-hover:scale-105 transition-transform duration-700">
-              <div className="w-20 h-20 bg-[#222222] border border-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MapPin className="h-8 w-8 text-[#D4AF37]" />
-              </div>
-              <p className="text-[#888888] font-medium tracking-widest uppercase text-xs">Global Heritage Office</p>
-              <h3 className="text-2xl font-medium text-white mt-2">Interactive Map Coming Soon</h3>
             </div>
           </div>
         </div>

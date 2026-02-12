@@ -18,7 +18,7 @@ import ScrollToTop from "./components/ScrollToTop";
 
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const showCTA = !['/about', '/explore'].includes(location.pathname) && location.hash !== '#testimonials' && !location.pathname.startsWith('/project/');
+  const showCTA = !['/about', '/explore', '/upload', '/contact'].includes(location.pathname) && location.hash !== '#testimonials' && !location.pathname.startsWith('/project/');
   const lenisRef = useRef<Lenis | null>(null);
 
   // Initialize Lenis once

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Play, Download, Share2, Calendar, MapPin, Layers } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Calendar, MapPin, Layers, Box, Palette, Settings, Play } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Slider } from '../components/ui/slider';
@@ -14,6 +14,11 @@ const ProjectDetail: React.FC = () => {
   const site = historicalSites.find(s => s.id === (id ? parseInt(id) : -1));
   const [timelineProgress, setTimelineProgress] = useState<number>(100);
   const [viewMode, setViewMode] = useState<'before' | 'after'>('before');
+  const [activeTab, setActiveTab] = useState<'model' | 'timeline' | 'details'>('model');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   if (!site) {
     return (
@@ -28,221 +33,250 @@ const ProjectDetail: React.FC = () => {
     );
   }
 
-  const currentStage = site.restorationStages.find(
-    stage => stage.progress <= timelineProgress
-  ) || site.restorationStages[0];
-
   return (
-    <div className="min-h-screen bg-[#111111] pt-32 pb-16 px-6">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-12">
-        <Link to="/explore">
-          <Button variant="ghost" className="mb-8 text-[#888888] hover:text-white hover:bg-white/5 rounded-full px-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Explore
-          </Button>
-        </Link>
-
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <div className="space-y-4">
-            <div className="inline-flex items-center bg-[#222222] border border-white/10 rounded-full px-4 py-1">
-              <span className="text-xs font-bold text-[#BBBBBB] uppercase tracking-widest">{site.era}</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-medium text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              {site.name}
-            </h1>
-            <div className="flex flex-wrap items-center gap-6 text-[#888888] font-medium">
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2 text-[#D4AF37]" />
-                {site.location}
-              </div>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-2 text-[#D4AF37]" />
-                Built: {site.yearBuilt}
-              </div>
-              <div className="flex items-center">
-                <Layers className="h-4 w-4 mr-2 text-[#D4AF37]" />
-                {site.architectureType}
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#111111] flex flex-col">
+      {/* Top Navigation Bar */}
+      <nav className="fixed top-0 left-0 right-0 bg-[#111111]/80 backdrop-blur-xl border-b border-white/5 z-50">
+        <div className="flex items-center justify-between px-6 py-4">
+          <Link to="/explore">
+            <Button variant="ghost" className="text-[#888888] hover:text-white hover:bg-white/5 rounded-full px-4 py-2">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </Link>
+          
+          <div className="flex-1 text-center">
+            <h1 className="text-lg font-bold text-white">{site.name}</h1>
           </div>
 
-          <div className="flex gap-4">
-            <Button variant="outline" size="lg" className="border-white/10 text-[#BBBBBB] hover:bg-white/5 rounded-full px-8">
-              <Share2 className="h-5 w-5 mr-2" />
-              Share
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" className="border-white/10 text-[#BBBBBB] hover:bg-white/5 rounded-full px-6">
+              <Share2 className="h-4 w-4" />
             </Button>
-            <Button className="bg-white text-black hover:bg-white/90 rounded-full px-8 font-bold">
-              <Download className="h-5 w-5 mr-2" />
-              Download Model
+            <Button size="sm" className="bg-white text-black hover:bg-white/90 rounded-full px-6 font-bold">
+              <Download className="h-4 w-4 mr-2" />
+              Download
             </Button>
           </div>
         </div>
-      </div>
+      </nav>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left: 3D Viewer */}
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-[#1A1A1A] rounded-[3.5rem] border border-white/5 overflow-hidden shadow-2xl relative">
-              <div className="aspect-video bg-[#111111] flex items-center justify-center relative">
-                <div className="absolute inset-0 z-0">
-                  <MonumentModel
-                    modelPath={viewMode === 'before' ? site.models?.before || '' : site.models?.after || ''}
-                    scale={site.models?.scales ? site.models.scales[viewMode] : 1}
-                    scrollProgress={timelineProgress / 100}
-                  />
+      {/* Main Content Area */}
+      <div className="flex flex-1 pt-20">
+        {/* Left Sidebar - Operations */}
+        <div className="w-80 bg-[#0D0D0D] border-r border-white/5 p-6 overflow-y-auto">
+          <div className="space-y-6">
+            {/* Project Info */}
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
+              <div className="space-y-3">
+                <div className="inline-block bg-[#222222] border border-white/10 rounded-full px-3 py-1">
+                  <span className="text-xs font-bold text-[#BBBBBB] uppercase tracking-widest">{site.era}</span>
                 </div>
-
-                {/* Before / After Toggle */}
-                <div className="absolute top-8 left-8 z-10 bg-[#1A1A1A]/80 backdrop-blur-xl rounded-full p-2 border border-white/10 flex shadow-2xl">
-                  <button
-                    onClick={() => setViewMode('before')}
-                    className={`px-8 py-3 rounded-full text-sm font-bold transition-all ${viewMode === 'before' ? 'bg-white text-black' : 'text-[#888888] hover:text-white'
-                      }`}
-                  >
-                    Historical State
-                  </button>
-                  <button
-                    onClick={() => setViewMode('after')}
-                    className={`px-8 py-3 rounded-full text-sm font-bold transition-all ${viewMode === 'after' ? 'bg-white text-black' : 'text-[#888888] hover:text-white'
-                      }`}
-                  >
-                    Current State
-                  </button>
-                </div>
-
-                {/* Status Indicator */}
-                <div className="absolute top-8 right-8 z-10 bg-black/40 backdrop-blur-md border border-white/10 px-6 py-3 rounded-full">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 rounded-full bg-[#00BFA6] animate-pulse"></div>
-                    <span className="text-xs font-bold text-white uppercase tracking-widest">3D Real-time Viewer</span>
+                <h2 className="text-xl font-bold text-white">{site.name}</h2>
+                <div className="space-y-2 text-xs text-[#888888]">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-3 w-3 text-[#D4AF37]" />
+                    {site.location}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3 w-3 text-[#D4AF37]" />
+                    {site.yearBuilt}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Rebuild Timeline */}
-            <div className="bg-[#1A1A1A] p-12 rounded-[3.5rem] border border-white/5 shadow-xl">
-              <div className="flex items-center justify-between mb-10">
-                <h3 className="text-2xl font-medium text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                  Historical Timeline
-                </h3>
-                <div className="bg-[#222222] border border-white/10 px-4 py-1 rounded-full">
-                  <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">{timelineProgress}% Visible</span>
+            {/* Operation Buttons */}
+            <div className="space-y-3">
+              <button className="w-full flex items-center gap-3 bg-[#1A1A1A] border border-white/10 hover:border-white/20 hover:bg-[#222222] px-4 py-3 rounded-2xl transition-all group">
+                <div className="w-8 h-8 bg-[#222222] rounded-lg flex items-center justify-center group-hover:bg-[#333333]">
+                  <Box className="h-4 w-4 text-[#D4AF37]" />
                 </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-white">Model</p>
+                  <p className="text-xs text-[#888888]">View & Configure</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 bg-[#1A1A1A] border border-white/10 hover:border-white/20 hover:bg-[#222222] px-4 py-3 rounded-2xl transition-all group">
+                <div className="w-8 h-8 bg-[#222222] rounded-lg flex items-center justify-center group-hover:bg-[#333333]">
+                  <Palette className="h-4 w-4 text-[#D4AF37]" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-white">Texture</p>
+                  <p className="text-xs text-[#888888]">Edit Material</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 bg-[#1A1A1A] border border-white/10 hover:border-white/20 hover:bg-[#222222] px-4 py-3 rounded-2xl transition-all group">
+                <div className="w-8 h-8 bg-[#222222] rounded-lg flex items-center justify-center group-hover:bg-[#333333]">
+                  <Settings className="h-4 w-4 text-[#D4AF37]" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-bold text-white">Settings</p>
+                  <p className="text-xs text-[#888888]">Adjust parameters</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Timeline Progress */}
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-white">Restoration Progress</h3>
+                <span className="text-xs font-bold text-[#D4AF37]">{timelineProgress}%</span>
               </div>
+              <Slider
+                value={[timelineProgress]}
+                onValueChange={(value) => setTimelineProgress(value[0])}
+                min={0}
+                max={100}
+                step={1}
+                className="w-full"
+              />
+              <p className="text-xs text-[#888888] mt-3">{site.restorationStages.length} stages</p>
+            </div>
 
-              <div className="space-y-12">
-                <div className="px-2">
-                  <Slider
-                    value={[timelineProgress]}
-                    onValueChange={(value) => setTimelineProgress(value[0])}
-                    min={0}
-                    max={100}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
+            {/* View Mode Toggle */}
+            <div className="bg-[#1A1A1A] p-3 rounded-2xl border border-white/10 flex">
+              <button
+                onClick={() => setViewMode('before')}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === 'before'
+                    ? 'bg-white text-black'
+                    : 'text-[#888888] hover:text-white'
+                }`}
+              >
+                Before
+              </button>
+              <button
+                onClick={() => setViewMode('after')}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+                  viewMode === 'after'
+                    ? 'bg-white text-black'
+                    : 'text-[#888888] hover:text-white'
+                }`}
+              >
+                After
+              </button>
+            </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {site.restorationStages.map((stage, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center justify-between p-6 rounded-[2rem] border transition-all cursor-pointer ${timelineProgress >= stage.progress
-                          ? 'bg-[#222222] border-white/20'
-                          : 'bg-[#111111] border-white/5 opacity-50'
-                        }`}
-                      onClick={() => setTimelineProgress(stage.progress)}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-3 h-3 rounded-full ${timelineProgress >= stage.progress ? 'bg-[#D4AF37]' : 'bg-[#333333]'}`}></div>
-                        <div>
-                          <p className="font-bold text-white text-sm uppercase tracking-wide">{stage.status}</p>
-                          <p className="text-xs text-[#888888] font-medium">{Number(stage.year) > 0 ? `${stage.year} AD` : `${Math.abs(Number(stage.year))} BC`}</p>
-                        </div>
-                      </div>
-                      <span className="text-sm font-bold text-white">{stage.progress}%</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Primary Action */}
+            <Button className="w-full bg-[#D4AF37] text-black hover:bg-[#E5C04A] py-6 rounded-2xl font-bold text-base shadow-xl transition-all transform hover:-translate-y-0.5">
+              <Play className="h-4 w-4 mr-2" />
+              Explore 3D
+            </Button>
+          </div>
+        </div>
+
+        {/* Center - 3D Viewport */}
+        <div className="flex-1 bg-[#0F0F0F] relative p-6">
+          <div className="w-full h-full bg-[#111111] rounded-3xl border border-white/5 overflow-hidden flex items-center justify-center relative shadow-2xl">
+            <div className="absolute inset-0 z-0">
+              <MonumentModel
+                modelPath={viewMode === 'before' ? site.models?.before || '' : site.models?.after || ''}
+                scale={site.models?.scales ? site.models.scales[viewMode] : 1}
+                scrollProgress={timelineProgress / 100}
+              />
+            </div>
+
+            {/* Center Status Badge */}
+            <div className="absolute bottom-8 left-8 z-10 bg-black/40 backdrop-blur-md border border-white/10 px-6 py-3 rounded-full">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 rounded-full bg-[#00BFA6] animate-pulse"></div>
+                <span className="text-xs font-bold text-white uppercase tracking-widest">3D Viewer Active</span>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right: Details */}
-          <div className="space-y-8">
-            <div className="bg-[#1A1A1A] p-10 rounded-[3.5rem] border border-white/5 shadow-xl">
-              <Tabs defaultValue="description" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8 bg-[#111111] p-1 rounded-full border border-white/5">
-                  <TabsTrigger value="description" className="rounded-full font-bold">Details</TabsTrigger>
-                  <TabsTrigger value="materials" className="rounded-full font-bold">Structure</TabsTrigger>
+        {/* Right Sidebar - Details & Assets */}
+        <div className="w-80 bg-[#0D0D0D] border-l border-white/5 p-6 overflow-y-auto">
+          <div className="space-y-6">
+            {/* Assets Panel */}
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
+              <h3 className="text-sm font-bold text-white mb-4">Assets</h3>
+              <p className="text-xs text-[#888888] mb-4">3D Model v{Math.floor(Math.random() * 10) + 1}.0</p>
+              <div className="bg-[#111111] p-4 rounded-2xl border border-white/10 text-center">
+                <Box className="h-8 w-8 text-[#D4AF37] mx-auto mb-2" />
+                <p className="text-xs font-bold text-white mb-1">Main Model</p>
+                <p className="text-xs text-[#888888]">{site.name}.glb</p>
+              </div>
+            </div>
+
+            {/* Site Details */}
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#111111] p-1 rounded-lg border border-white/5">
+                  <TabsTrigger value="info" className="rounded font-bold text-xs py-2">Info</TabsTrigger>
+                  <TabsTrigger value="history" className="rounded font-bold text-xs py-2">History</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="description" className="space-y-8">
+                <TabsContent value="info" className="space-y-4 text-xs">
                   <div>
-                    <h3 className="text-xl font-medium text-white mb-4" style={{ fontFamily: "'Manrope', sans-serif" }}>About {site.name}</h3>
-                    <p className="text-[#888888] text-sm leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                      {site.description}
-                    </p>
+                    <p className="font-bold text-[#D4AF37] uppercase tracking-widest mb-1">Architecture</p>
+                    <p className="text-[#BBBBBB]">{site.architectureType}</p>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="bg-[#111111] p-6 rounded-[2rem] border border-white/5">
-                      <h4 className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Era</h4>
-                      <p className="text-sm text-white font-medium">{site.era}</p>
-                    </div>
-                    <div className="bg-[#111111] p-6 rounded-[2rem] border border-white/5">
-                      <h4 className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Style</h4>
-                      <p className="text-sm text-white font-medium">{site.architectureType}</p>
-                    </div>
+                  <div>
+                    <p className="font-bold text-[#D4AF37] uppercase tracking-widest mb-1">Era</p>
+                    <p className="text-[#BBBBBB]">{site.era}</p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#D4AF37] uppercase tracking-widest mb-1">Built</p>
+                    <p className="text-[#BBBBBB]">{site.yearBuilt}</p>
                   </div>
                 </TabsContent>
 
-                <TabsContent value="materials" className="space-y-8">
-                  <div>
-                    <h3 className="text-xl font-medium text-white mb-4" style={{ fontFamily: "'Manrope', sans-serif" }}>Construction</h3>
-                    <div className="space-y-3">
-                      {site.materials.map((material, index) => (
-                        <div key={index} className="flex items-center space-x-3 p-4 rounded-2xl bg-[#111111] border border-white/5">
-                          <div className="w-2 h-2 rounded-full bg-[#D4AF37]"></div>
-                          <span className="text-sm text-[#BBBBBB] font-medium">{material}</span>
+                <TabsContent value="history" className="space-y-3 text-xs">
+                  <p className="text-[#888888] leading-relaxed">{site.description}</p>
+                  <div className="bg-[#111111] p-3 rounded-lg border border-white/10">
+                    <p className="font-bold text-white mb-2">Materials Used:</p>
+                    <div className="space-y-2">
+                      {site.materials.slice(0, 3).map((material, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></div>
+                          <span className="text-[#BBBBBB]">{material}</span>
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="bg-[#111111] p-6 rounded-[2rem] border border-white/5">
-                    <h4 className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">History</h4>
-                    <p className="text-sm text-white font-medium mb-1">Built: {site.yearBuilt}</p>
-                    {site.yearDestroyed !== 'N/A' && (
-                      <p className="text-sm text-[#888888] font-medium">Destroyed: {site.yearDestroyed}</p>
-                    )}
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
 
-            <div className="bg-gradient-to-br from-[#1A1A1A] to-[#222222] p-10 rounded-[3.5rem] border border-[#D4AF37]/20 shadow-xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-              <h3 className="text-xl font-medium text-white mb-6" style={{ fontFamily: "'Manrope', sans-serif" }}>Analysis</h3>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center group-hover:translate-x-1 transition-transform">
-                  <span className="text-sm font-bold text-[#888888] uppercase tracking-widest">Accuracy</span>
-                  <span className="text-2xl font-bold text-[#00BFA6] tracking-tighter">
-                    {site.restorationStages[site.restorationStages.length - 1].progress}%
-                  </span>
+            {/* Accuracy Badge */}
+            <div className="bg-gradient-to-br from-[#1A1A1A] to-[#222222] p-6 rounded-3xl border border-[#D4AF37]/20">
+              <div className="space-y-3">
+                <p className="text-xs font-bold text-[#888888] uppercase tracking-widest">Accuracy Score</p>
+                <div className="text-3xl font-bold text-[#D4AF37]">
+                  {site.restorationStages[site.restorationStages.length - 1].progress}%
                 </div>
-                <div className="flex justify-between items-center group-hover:translate-x-1 transition-transform">
-                  <span className="text-sm font-bold text-[#888888] uppercase tracking-widest">Status</span>
-                  <span className="text-sm font-bold text-[#D4AF37] uppercase tracking-widest">Active Preserve</span>
-                </div>
+                <p className="text-xs text-[#888888]">Data-driven restoration</p>
               </div>
             </div>
 
-            <Button className="w-full bg-[#D4AF37] text-black hover:bg-[#E5C04A] py-10 rounded-full font-bold text-lg shadow-2xl transition-all transform hover:-translate-y-1">
-              Start 3D Exploration
-            </Button>
+            {/* Restoration Stages */}
+            <div className="bg-[#1A1A1A] p-6 rounded-3xl border border-white/5">
+              <h3 className="text-sm font-bold text-white mb-4">Timeline</h3>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {site.restorationStages.map((stage, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setTimelineProgress(stage.progress)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all flex items-center gap-2 ${
+                      timelineProgress >= stage.progress
+                        ? 'bg-[#222222] border border-[#D4AF37]/30 text-white'
+                        : 'border border-white/5 text-[#888888] hover:text-white hover:border-white/10'
+                    }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${timelineProgress >= stage.progress ? 'bg-[#D4AF37]' : 'bg-[#333333]'}`}></div>
+                    <div>
+                      <p className="font-bold">{stage.status}</p>
+                      <p className="text-[#888888] text-xs">{Number(stage.year) > 0 ? `${stage.year} AD` : `${Math.abs(Number(stage.year))} BC`}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

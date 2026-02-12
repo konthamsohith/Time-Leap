@@ -88,7 +88,7 @@ const About: React.FC = () => {
             <div className="lg:col-span-7">
               <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden border border-white/5 group">
                 <img
-                  src="https://images.unsplash.com/photo-1541432901012-a774656f4541?w=1200&q=80"
+                  src="https://images.unsplash.com/photo-1730809019029-ecfdb9bb1934?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="Historical ruin being studied"
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
@@ -166,38 +166,7 @@ const About: React.FC = () => {
           </div>
         </section>
 
-        {/* --- TEAM SECTION --- */}
-        <section className="mb-32">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-            <div className="max-w-xl space-y-4">
-              <h2 className="text-5xl md:text-6xl font-medium text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                Meet the <br /> TimeLeap team.
-              </h2>
-              <p className="text-lg text-[#888888]" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                A collective of experts passionate about architectural evolution and cultural heritage.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="group space-y-6">
-                <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden border border-white/5 group-hover:border-white/10 transition-all">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-medium text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>{member.name}</h3>
-                  <p className="text-[#D4AF37] font-bold tracking-wide uppercase text-sm mt-1" style={{ fontFamily: "'Manrope', sans-serif" }}>{member.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        
 
         {/* --- FINAL CTA --- */}
         <section className="text-center py-20 border-t border-white/10 mt-32">
