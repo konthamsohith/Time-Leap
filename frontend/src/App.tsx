@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/toaster";
 import Navbar from "./components/Navbar";
+import { CTASection } from "./components/CTASection";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -53,6 +54,7 @@ const App: React.FC = () => {
               <Route path="/contact" element={<Contact />} />
             </Routes>
           </main>
+          <CTASection />
           <Footer />
           <Toaster />
         </div>
