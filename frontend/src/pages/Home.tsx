@@ -508,10 +508,7 @@ function ProcessFeaturesSection() {
 
 
 const HERO_VIDEOS = [
-  "https://ik.imagekit.io/ji2lkjg53/203803-922187125_medium.mp4",
-  "https://ik.imagekit.io/ji2lkjg53/269310_medium.mp4",
-  "https://ik.imagekit.io/ji2lkjg53/35423-407130876_medium.mp4",
-  "https://ik.imagekit.io/ji2lkjg53/172590-847860517_small.mp4"
+  '/videos/herosection.mp4',
 ];
 
 const Home: React.FC = () => {
@@ -533,6 +530,19 @@ const Home: React.FC = () => {
     });
   }, [currentVideoIndex]);
 
+  // Auto-loop video when it ends
+  useEffect(() => {
+    const video = document.querySelector('video');
+    if (video) {
+      const handleEnded = () => {
+        video.currentTime = 0;
+        video.play().catch(() => { });
+      };
+      video.addEventListener('ended', handleEnded);
+      return () => video.removeEventListener('ended', handleEnded);
+    }
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-[#111111] text-white overflow-hidden selection:bg-white selection:text-black">
@@ -546,6 +556,7 @@ const Home: React.FC = () => {
               autoPlay={index === 0}
               muted
               playsInline
+              loop
               onEnded={handleVideoEnd}
               onCanPlay={(e) => {
                 if (index === currentVideoIndex) {
