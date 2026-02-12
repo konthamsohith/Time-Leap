@@ -626,24 +626,7 @@ const Home: React.FC = () => {
             </p>
 
             {/* Play Button & CTA */}
-            <div className="flex items-center gap-6">
-              <Link to="/upload">
-                <button
-                  className="w-14 h-14 rounded-full border-2 border-[#D4AF37] flex items-center justify-center hover:bg-[#D4AF37] hover:scale-110 transition-all duration-300 group"
-                >
-                  <svg
-                    className="w-5 h-5 text-[#D4AF37] group-hover:text-black ml-1"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </button>
-              </Link>
-              <div
-                className="w-24 h-[2px] bg-white/30"
-              ></div>
-            </div>
+
           </div>
         </motion.div>
 
