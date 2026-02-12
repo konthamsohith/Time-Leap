@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/toaster";
 import Navbar from "./components/Navbar";
@@ -15,7 +15,10 @@ import Contact from "./pages/Contact";
 import Lenis from "@studio-freight/lenis";
 import { useEffect } from "react";
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const showCTA = !['/about', '/explore'].includes(location.pathname) && location.hash !== '#testimonials' && !location.pathname.startsWith('/project/');
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -40,24 +43,30 @@ const App: React.FC = () => {
   }, []);
 
   return (
+    <div className="App min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </main>
+      {showCTA && <CTASection />}
+      <Footer />
+      <Toaster />
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
     <ThemeProvider>
       <BrowserRouter>
-        <div className="App min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path="/project/:id" element={<ProjectDetail />} />
-              <Route path="/upload" element={<Upload />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </main>
-          <CTASection />
-          <Footer />
-          <Toaster />
-        </div>
+        <AppContent />
       </BrowserRouter>
     </ThemeProvider>
   );

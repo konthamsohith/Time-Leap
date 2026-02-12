@@ -652,14 +652,6 @@ const Home: React.FC = () => {
       </section>
 
 
-      {/* --- WHY CHOOSE SECTION --- */}
-      <WhyChooseSection />
-
-      {/* --- OUR PROCESS FEATURES SECTION --- */}
-      <ProcessFeaturesSection />
-
-
-
       {/* --- RECENT PROJECTS SHOWCASE --- */}
       <section className="pt-24 pb-32 bg-[#0a0a0a] px-6 lg:px-20" id="projects">
         <div className="max-w-[1400px] mx-auto">
@@ -734,6 +726,16 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* --- WHY CHOOSE SECTION --- */}
+      <WhyChooseSection />
+
+      {/* --- OUR PROCESS FEATURES SECTION --- */}
+      <ProcessFeaturesSection />
+
+
+
+
 
 
       {/* --- TESTIMONIALS SECTION --- */}
