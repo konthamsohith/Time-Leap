@@ -18,32 +18,38 @@ interface MonumentModelProps {
   modelPath: string;
   scale?: number | { before: number; after: number };
   scrollProgress?: number;
+
 }
 
 export default function MonumentModel({
   modelPath,
   scale = 1,
-  scrollProgress = 1
+  scrollProgress = 1,
+
 }: MonumentModelProps) {
   return (
     <div className="w-full h-full">
       <Canvas
         className="w-full h-full"
-        camera={{ position: [0, 0, 8], fov: 45 }} // Adjusted camera
+        camera={{ position: [0, 12, 8], fov: 45 }} // Adjusted camera
         dpr={[1, 2]}
       >
-        {/* Stronger Manual Lighting */}
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[5, 10, 5]} intensity={2} castShadow />
-        <directionalLight position={[-5, 5, 5]} intensity={1} />
+        {/* Consistent Multi-directional Lighting */}
+        <ambientLight intensity={1.2} />
+        <directionalLight position={[5, 10, 5]} intensity={1.5} castShadow />
+        <directionalLight position={[-5, 10, 5]} intensity={1.5} castShadow />
+        <directionalLight position={[5, 10, -5]} intensity={1.5} castShadow />
+        <directionalLight position={[-5, 10, -5]} intensity={1.5} castShadow />
 
         <Suspense fallback={null}>
+          <group position={[0, -2, 0]}>
           <Center top>
             <GLBModel
               modelPath={modelPath}
               scale={scale}
             />
           </Center>
+          </group>
         </Suspense>
 
         <OrbitControls

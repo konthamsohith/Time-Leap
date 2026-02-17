@@ -67,8 +67,8 @@ export const historicalSites: HistoricalSite[] = [
       before: "/models3d/hampi_before.glb",
       after: "/models3d/hampi_after.glb",
       scales: {
-        before: 2.5,
-        after: 2.5
+        before: 4.0,
+        after: 5.0
       }
     }
   },
@@ -93,10 +93,10 @@ export const historicalSites: HistoricalSite[] = [
     ],
     models: {
       before: "/models3d/colosseum_before.glb",
-      after: "/models3d/colosseum_before.glb",
+      after: "/models3d/colosseum_after.glb",
       scales: {
-        before: 2.5,
-        after: 2.5
+        before: 9.0,
+        after: 9.0
       }
     }
   },
